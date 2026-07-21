@@ -36,27 +36,27 @@ const produtosMock = [
         _id: "1",
         nome: "Bola Choc.tiquinho Ao Leite",
         unidade: "350g",
-        imagemUrl: "https://images.unsplash.com/photo-1548907040-4baa42d10919?q=80&w=250&auto=format&fit=crop",
-        precoAntigo: 41.90,
-        precoAtual: 19.90,
+        img: "https://images.unsplash.com/photo-1548907040-4baa42d10919?q=80&w=250&auto=format&fit=crop",
+        valorProduto: 41.90,
+        valoremPromocao: 19.90,
         descontoPorcentagem: 53
     },
     {
         _id: "2",
         nome: "Camarão Rosa Limpo Congelado",
         unidade: "400g",
-        imagemUrl: "https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?q=80&w=250&auto=format&fit=crop",
-        precoAntigo: 65.90,
-        precoAtual: 49.90,
+        img: "https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?q=80&w=250&auto=format&fit=crop",
+        valorProduto: 65.90,
+        valoremPromocao: 49.90,
         descontoPorcentagem: 24
     },
     {
         _id: "4",
         nome: "Farinha de Trigo Especial para Massas",
         unidade: "1kg",
-        imagemUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=250&auto=format&fit=crop",
-        precoAntigo: 8.50,
-        precoAtual: 6.99,
+        img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=250&auto=format&fit=crop",
+        valorProduto: 8.50,
+        valoremPromocao: 6.99,
         descontoPorcentagem: 17
     }
 ];
@@ -97,20 +97,20 @@ function renderizarCards(produtos) {
                 </div>
 
                 <div class="produto-imagem">
-                    <img src="${produto.imagemUrl}" alt="${produto.nome}">
+                    <img src="${produto.img}" alt="${produto.nomeProduto}">
                 </div>
 
                 <div class="info-titulo">
-                    <h3 class="produto-titulo">${produto.nome}</h3>
+                    <h3 class="produto-titulo">${produto.nomeProduto}</h3>
                     <span class="produto-unidade">${produto.unidade}</span>
                 </div>
 
                 <div class="info-preco">
                     <div class="preco-antigo-linha">
-                        <span class="preco-riscado">R$ ${produto.precoAntigo.toFixed(2).replace('.', ',')}</span>
+                        <span class="preco-riscado">R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</span>
                     </div>
                     <div class="preco-atual-linha">
-                        <span class="preco-destaque">R$ ${produto.precoAtual.toFixed(2).replace('.', ',')}</span>
+                        <span class="preco-destaque">R$ ${produto.valoremPromocao.toFixed(2).replace('.', ',')}</span>
                         <span></span>
                         <span class="badge-desconto">-${produto.descontoPorcentagem}%</span>
                     </div>
