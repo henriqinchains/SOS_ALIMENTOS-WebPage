@@ -6,14 +6,13 @@
 :root {
   --verde-900: #1b4d2e;
   --verde-700: #2e7d46;
-  --verde-500: ;
   --verde-100: #d4d1d1;
   --laranja-600: #ef6c1a;
   --laranja-500: #ff8c3a;
   --cinza-900: #22281f;
   --cinza-600: #5c6b58;
   --cinza-200: #e4e8e0;
-  --branco:   #eaf5ee;
+  --branco: #eaf5ee;
 
 
   --fonte-display: 'Poppins', 'Segoe UI', sans-serif;
@@ -70,20 +69,24 @@ header {
 }
 
 .nav-bar-principal nav {
-  max-width: 1280px;
+  max-width: none;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 24px;
-  font-size: 0.78rem;
+  /* FIX: clamp() faz padding/font-size encolherem de forma contínua com a viewport,
+     em vez de saltar de valor só nos breakpoints */
+  padding: clamp(4px, 1vw, 6px) clamp(14px, 3vw, 24px);
+  font-size: clamp(0.68rem, 1.2vw, 0.78rem);
   letter-spacing: 0.03em;
+  transition: padding 0.25s ease, font-size 0.25s ease;
 }
 
 .left-first-line,
 .right-first-line {
   display: flex;
-  gap: 20px;
+  gap: clamp(8px, 2vw, 20px);
+  transition: gap 0.25s ease;
 }
 
 .left-first-line li a,
@@ -105,32 +108,37 @@ header {
   background: var(--branco);
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 14px 24px;
-  max-width: 1280px;
+  gap: clamp(12px, 2.5vw, 24px);
+  padding: clamp(12px, 2vw, 14px) clamp(14px, 3vw, 24px);
+  max-width: none;
   margin: 0 auto;
   border-bottom: 3px solid var(--verde-700);
   flex-wrap: wrap;
+  transition: gap 0.25s ease, padding 0.25s ease;
 }
 
 .logo img {
-  height: 44px;
+  /* FIX: escala contínua em vez de pulo abrupto de 44px pra outro valor no breakpoint */
+  height: clamp(32px, 5vw, 44px);
   display: block;
+  transition: height 0.25s ease;
 }
 
 /* Botão "Todos os departamentos" */
 .hamburguer-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  /* FIX: centraliza conteúdo dentro do botão em qualquer tamanho */
+  gap: clamp(0px, 1vw, 8px);
   background: var(--verde-700);
   color: var(--branco);
   font-weight: 600;
-  font-size: 0.85rem;
-  padding: 10px 16px;
+  font-size: clamp(0rem, 1.5vw, 0.85rem);
+  padding: 10px clamp(10px, 2vw, 16px);
   border-radius: var(--raio);
   white-space: nowrap;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, padding 0.25s ease, font-size 0.25s ease, gap 0.25s ease;
 }
 
 .hamburguer-btn:hover {
@@ -145,10 +153,11 @@ header {
 /* Links centrais */
 .nav-links {
   display: flex;
-  gap: 22px;
-  font-size: 0.92rem;
+  gap: clamp(12px, 2vw, 22px);
+  font-size: clamp(0.82rem, 1.3vw, 0.92rem);
   font-weight: 600;
   color: var(--verde-900);
+  transition: gap 0.25s ease, font-size 0.25s ease;
 }
 
 .nav-links a {
@@ -234,13 +243,17 @@ header {
 
 .banner-carrossel {
   position: relative;
-  max-width: 1280px;
-  margin: 20px auto;
-  border-radius: 16px;
+  width: 100%;
+  max-width: 1250px;
+  max-height: 325px;
+  /* FIX: margem escala com a viewport em vez de pular de 20px pra 12px no breakpoint */
+  margin: clamp(12px, 2vw, 20px) auto;
+  border-radius: clamp(12px, 1.5vw, 16px);
   overflow: hidden;
   box-shadow: var(--sombra-forte);
   aspect-ratio: 16 / 5;
   background: var(--verde-700);
+  transition: margin 0.25s ease, border-radius 0.25s ease, aspect-ratio 0.25s ease;
 }
 
 .slides {
@@ -269,8 +282,8 @@ header {
   display: block;
 }
 
-.botao-ant,
-.botao-prox {
+.banner-carrossel .botao-ant,
+.banner-carrossel .botao-prox {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -283,13 +296,22 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease;
+  transition: opacity 0.2s ease, background 0.15s ease, transform 0.2s ease;
   z-index: 5;
+
+  opacity: 0;
+  visibility: hidden;
+}
+
+.banner-carrossel:hover .botao-ant,
+.banner-carrossel:hover .botao-prox {
+  opacity: 1;
+  visibility: visible;
 }
 
 .botao-ant:hover,
 .botao-prox:hover {
-  background: var(--laranja-600);
+  background: var(--cinza-900);
 }
 
 .banner-carrossel .botao-ant {
@@ -307,7 +329,8 @@ header {
 .Ofertas {
   max-width: 1280px;
   margin: 0 auto 40px;
-  padding: 0 24px;
+  padding: 0 clamp(14px, 3vw, 24px);
+  transition: padding 0.25s ease;
 }
 
 .barra-superior {
@@ -320,11 +343,13 @@ header {
 
 .barra-superior p {
   font-family: var(--fonte-display);
-  font-size: 1.4rem;
+  /* FIX: título escala suavemente em vez de saltar de 1.4rem pra 1.15rem no breakpoint */
+  font-size: clamp(1.15rem, 2.5vw, 1.4rem);
   font-weight: 700;
   color: var(--verde-900);
   position: relative;
   padding-left: 14px;
+  transition: font-size 0.25s ease;
 }
 
 /* Tag de destaque à esquerda do título — o "selo" da seção */
@@ -377,15 +402,16 @@ header {
 }
 
 /* Grade de produtos (preenchida via JS) */
-.itens-vertical {
+.itens-horizontal {
   display: flex;
   gap: 16px;
   overflow-x: auto;
   min-height: 120px;
   padding-bottom: 16px;
+  scroll-behavior: smooth;
 }
 
-.itens-vertical:empty::after {
+.itens-horizontal:empty::after {
   content: "Carregando ofertas...";
   grid-column: 1 / -1;
   text-align: center;
@@ -394,111 +420,141 @@ header {
   padding: 32px 0;
 }
 
+.itens-horizontal::-webkit-scrollbar {
+  height: 10px;
+}
+
+.itens-horizontal::-webkit-scrollbar-track {
+  background: var(--cinza-200);
+  border-radius: 5px;
+}
+
+.itens-horizontal::-webkit-scrollbar-thumb {
+  background: var(--verde-700);
+  border-radius: 5px;
+}
+
+.itens-horizontal::-webkit-scrollbar-thumb:hover {
+  background: var(--verde-900);
+}
+
 /* Cartão de produto (classe sugerida para uso via JS) */
 .produto-card {
-    border: 1px solid #eaeaea;
-    border-radius: 12px;
-    padding: 16px;
-    background-color: #ffffff;
-    flex: 0 0 260px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    font-family: sans-serif;
-    transition: box-shadow 0.2s ease;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  flex: 0 0 260px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: sans-serif;
+  transition: box-shadow 0.2s ease;
 }
 
 .produto-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Cabeçalho do Card (Ícones) */
 .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #a1a1aa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #a1a1aa;
 }
 
 .icones-acao {
-    display: flex;
-    gap: 12px;
+  display: flex;
+  gap: 12px;
 }
 
 .icones-acao svg {
-    cursor: pointer;
-    transition: color 0.2s;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .icones-acao svg:hover {
-    color: #3f3f46;
+  color: #3f3f46;
 }
 
 /* Imagem e Textos */
 .produto-imagem img {
-    width: 100%;
-    height: 180px;
-    object-fit: contain;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
 }
 
 .info-titulo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Espaço bem pequeno entre o nome e o peso */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Espaço bem pequeno entre o nome e o peso */
 }
 
 .produto-unidade {
-    font-size: 13px;
-    font-weight: 500;
-    color: #71717a; /* Um cinza um pouco mais escuro para leitura */
+  font-size: 13px;
+  font-weight: 500;
+  color: #71717a;
+  /* Um cinza um pouco mais escuro para leitura */
 }
 
 /* Preços */
 .info-preco {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .preco-antigo-linha {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .preco-riscado {
-    text-decoration: line-through;
-    color: #a1a1aa;
+  text-decoration: line-through;
+  color: #a1a1aa;
 }
 
 .preco-atual-linha {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #a1a1aa;
 }
 
 .preco-destaque {
-    color: #84cc16; /* Verde forte */
-    font-size: 24px;
-    font-weight: 800;
-    margin-right: 4px;
+  color: #84cc16;
+  /* Verde forte */
+  font-size: 24px;
+  font-weight: 800;
+  margin-right: 4px;
 }
 
 .badge-desconto {
-    background-color: #ef4444; /* Vermelho */
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-left: 8px;
+  background-color: #ef4444;
+  /* Vermelho */
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 8px;
 }
 
 /* ============================================================
    RESPONSIVO
+   Observação: os tamanhos (fonte, padding, altura, margem) agora
+   escalam de forma contínua via clamp() nos seletores-base acima.
+   As media queries abaixo cuidam só de mudanças ESTRUTURAIS
+   (quebra de linha, ordem, display) que não têm como ser
+   interpoladas suavemente — não existe "meio-termo" entre um
+   elemento estar numa linha ou quebrado embaixo.
    ============================================================ */
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+
+  /* FIX: era 900px — não cobria a faixa ~901–1080px onde a quebra ocorria */
   .nav-links {
     order: 3;
     width: 100%;
@@ -516,42 +572,22 @@ header {
 }
 
 @media (max-width: 600px) {
-  .nav-bar-principal nav {
-    font-size: 0.68rem;
-    gap: 8px;
-    padding: 6px 14px;
-  }
-
-  .left-first-line,
-  .right-first-line {
-    gap: 10px;
-  }
-
-  .nav-bar-secundaria {
-    padding: 12px 14px;
-  }
-
   .hamburguer-btn {
-    font-size: 0;
-    padding: 10px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    gap: 0;
+  }
+
+  .hamburguer-texto {
+    /* Requer envolver o texto do botão em <span class="hamburguer-texto"> no HTML.
+       display:none remove do fluxo de verdade — ao contrário de font-size:0,
+       não deixa gap "fantasma" sobrando no flex. */
+    display: none;
   }
 
   .hamburguer-btn svg {
     margin: 0;
-  }
-
-  .banner-carrossel {
-    margin: 12px 14px;
-    border-radius: 12px;
-    aspect-ratio: 4 / 3;
-  }
-
-  .Ofertas {
-    padding: 0 14px;
-  }
-
-  .barra-superior p {
-    font-size: 1.15rem;
   }
 }
 
