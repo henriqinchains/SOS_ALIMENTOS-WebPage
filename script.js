@@ -61,7 +61,6 @@ function resetarIntervalo() {
 
 // Inicia o carregamento quando a página abrir
 document.addEventListener('DOMContentLoaded', () => {
-    carregarBanners();
     carregarProdutosTeste();
 });
 
