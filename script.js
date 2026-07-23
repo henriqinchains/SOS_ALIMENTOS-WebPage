@@ -1,19 +1,37 @@
 let indiceAtual = 0;
-const slides = document.querySelectorAll('.slide');
+let slides = []; // Vai começar vazio e ser preenchido dinamicamente
 let intervaloTemporizador;
 
-const itensHorizontal = document.querySelector('.itens-horizontal');
-const btnProxOferta = document.querySelector('.Ofertas .botao-prox');
-const btnAntOferta = document.querySelector('.Ofertas .botao-ant');
+// Função principal que você vai chamar quando a página carregar
+function carregarBanners() {
+    // const resposta = await fetch('http://localhost:3000/api/banners');
+    // const banners = await resposta.json();
+    
+    renderizarBanners(bannersMock);
+}
 
-btnProxOferta.addEventListener('click', () => {
-    itensHorizontal.scrollBy({ left: 260, behavior: 'smooth' });
-});
+function renderizarBanners(listaBanners) {
+    const containerSlides = document.querySelector('.slides');
+    containerSlides.innerHTML = ''; // Limpa qualquer banner estático do HTML
 
-btnAntOferta.addEventListener('click', () => {
-    itensHorizontal.scrollBy({ left: -260, behavior: 'smooth' });
-});
+    listaBanners.forEach((banner, index) => {
+        // O primeiro banner (index 0) já ganha a classe 'ativo'
+        const classeAtivo = index === 0 ? 'ativo' : '';
+        
+        const slideHTML = `
+            <div class="slide ${classeAtivo}">
+                <img src="${banner.img}" alt="${banner.titulo}">
+            </div>
+        `;
+        containerSlides.insertAdjacentHTML('beforeend', slideHTML);
+    });
 
+    // Atualiza a lista de slides agora que eles existem no DOM
+    slides = document.querySelectorAll('.slide');
+    
+    // Inicia o loop do carrossel
+    iniciarIntervalo();
+}
 
 function mostrarSlide(indice) {
     slides.forEach((slide) => slide.classList.remove('ativo'));
@@ -25,8 +43,9 @@ function mostrarSlide(indice) {
 }
 
 function mudarSlide(direcao) {
-    mostrarSlide(indiceAtual += direcao);
-    resetarIntervalo(); // Reseta o tempo ao clicar
+    indiceAtual += direcao;
+    mostrarSlide(indiceAtual);
+    resetarIntervalo();
 }
 
 function iniciarIntervalo() {
@@ -36,12 +55,15 @@ function iniciarIntervalo() {
 }
 
 function resetarIntervalo() {
-    clearInterval(intervaloTemporizador); // Para o cronômetro atual
-    iniciarIntervalo(); // Inicia um novo do zero
+    clearInterval(intervaloTemporizador);
+    iniciarIntervalo();
 }
 
-// Inicia o carrossel ao carregar a página
-iniciarIntervalo();
+// Inicia o carregamento quando a página abrir
+document.addEventListener('DOMContentLoaded', () => {
+    carregarBanners();
+    carregarProdutosTeste();
+});
 
 // 1. Criamos os dados falsos simulando a resposta do MongoDB
 const produtosMock = [
@@ -133,5 +155,3 @@ function renderizarCards(produtos) {
         container.insertAdjacentHTML('beforeend', cardHTML);
     });
 }
-
-document.addEventListener('DOMContentLoaded', carregarProdutosTeste);
