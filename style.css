@@ -326,7 +326,7 @@ header {
    SEÇÃO OFERTAS
    ============================================================ */
 
-.Ofertas {
+.secao-produtos {
   max-width: 1280px;
   margin: 0 auto 40px;
   padding: 0 clamp(14px, 3vw, 24px);
@@ -493,11 +493,30 @@ header {
   /* Espaço bem pequeno entre o nome e o peso */
 }
 
+.produto-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cinza-900);
+  line-height: 1.3;
+  /* Limita a 2 linhas pra não quebrar a altura do card */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .produto-unidade {
   font-size: 13px;
   font-weight: 500;
   color: #71717a;
   /* Um cinza um pouco mais escuro para leitura */
+}
+
+.sem-produtos {
+  text-align: center;
+  color: var(--cinza-600);
+  padding: 40px 0;
+  font-size: 0.95rem;
 }
 
 /* Preços */
@@ -554,7 +573,6 @@ header {
 
 @media (max-width: 1100px) {
 
-  /* FIX: era 900px — não cobria a faixa ~901–1080px onde a quebra ocorria */
   .nav-links {
     order: 3;
     width: 100%;
@@ -580,9 +598,6 @@ header {
   }
 
   .hamburguer-texto {
-    /* Requer envolver o texto do botão em <span class="hamburguer-texto"> no HTML.
-       display:none remove do fluxo de verdade — ao contrário de font-size:0,
-       não deixa gap "fantasma" sobrando no flex. */
     display: none;
   }
 
@@ -591,7 +606,6 @@ header {
   }
 }
 
-/* Acessibilidade: foco visível */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible {
