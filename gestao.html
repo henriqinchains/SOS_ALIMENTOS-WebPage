@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Alimentos - Gestão</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            background-color: #f0f8ff;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+        #mensagem {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .sucesso { background-color: #d4edda; color: #155724; }
+        .erro { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>📦 Cadastro de Produtos em Massa</h1>
+        
+        <form id="formUpload">
+            <div class="upload-area">
+                <label for="arquivoCSV"><strong>Selecione o arquivo CSV:</strong></label><br>
+                <input type="file" id="arquivoCSV" accept=".csv" required>
+            </div>
+            
+            <button type="submit">Enviar para o Banco de Dados</button>
+        </form>
+
+        <div id="mensagem"></div>
+    </div>
+
+    <script>
+        document.getElementById('formUpload').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Evita que a página recarregue
+            
+            const inputArquivo = document.getElementById('arquivoCSV');
+            const divMensagem = document.getElementById('mensagem');
+            
+            const formData = new FormData();
+            formData.append('arquivo', inputArquivo.files[0]);
+
+            // Mostra mensagem de carregamento
+            divMensagem.style.display = 'block';
+            divMensagem.className = '';
+            divMensagem.innerText = '⏳ Enviando para o servidor...';
+
+            try {
+                // Dispara a requisição para a sua API
+                const resposta = await fetch('http://localhost:3000/api/upload-csv', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const dados = await resposta.json();
+
+                // Verifica se o servidor retornou sucesso (status 201)
+                if (resposta.ok) {
+                    divMensagem.className = 'sucesso';
+                    divMensagem.innerText = `✅ Sucesso! ${dados.mensagem}`;
+                    inputArquivo.value = ''; // Limpa o input
+                } else {
+                    divMensagem.className = 'erro';
+                    divMensagem.innerText = `❌ Erro: ${dados.erro}`;
+                }
+            } catch (erro) {
+                divMensagem.className = 'erro';
+                divMensagem.innerText = '❌ Erro crítico: O servidor está rodando?';
+            }
+        });
+    </script>
+
+</body>
+</html>
