@@ -3,121 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOS Alimentos - Gestão</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-        }
-        .card {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .upload-area {
-            border: 2px dashed #3498db;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 20px;
-            background-color: #f0f8ff;
-        }
-        input[type="file"] {
-            margin-top: 10px;
-        }
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #219150;
-        }
-        #mensagem {
-            margin-top: 20px;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        .sucesso { background-color: #d4edda; color: #155724; }
-        .erro { background-color: #f8d7da; color: #721c24; }
-    </style>
+    <title>Gestão de Produtos</title>
+    <link rel="stylesheet" href="gestao.css">
 </head>
 <body>
+    <header class="header-admin">
+        <h1>Painel de Gestão - SOS Alimentos</h1>
+    </header>
 
-    <div class="card">
-        <h1>📦 Cadastro de Produtos em Massa</h1>
-        
-        <form id="formUpload">
+    <main class="container">
+        <!-- BLOCO 1: IMPORTAÇÃO DE PLANILHA -->
+        <section class="card">
+            <h2>Importar Planilha (CSV)</h2>
             <div class="upload-area">
-                <label for="arquivoCSV"><strong>Selecione o arquivo CSV:</strong></label><br>
-                <input type="file" id="arquivoCSV" accept=".csv" required>
+                <input type="file" id="arquivoCsv" accept=".csv">
+                <button class="btn" onclick="preVisualizarCSV()">Ler Planilha</button>
             </div>
             
-            <button type="submit">Enviar para o Banco de Dados</button>
-        </form>
+            <div id="areaPreview" class="hidden">
+                <h3>Revisão de Importação</h3>
+                <div class="table-container">
+                    <table id="tabelaPreview">
+                        <thead>
+                            <tr>
+                                <th>Nome Limpo</th>
+                                <th>Unidade</th>
+                                <th>Preço</th>
+                                <th>Ativo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoPreview"></tbody>
+                    </table>
+                </div>
+                <button class="btn btn-success mt-1" onclick="confirmarImportacao()">Confirmar e Salvar no Banco</button>
+            </div>
+        </section>
 
-        <div id="mensagem"></div>
-    </div>
+        <!-- BLOCO 2: FORMULÁRIO MANUAL (Criar e Editar) -->
+        <section class="card">
+            <h2 id="tituloFormulario">Cadastrar Novo Produto</h2>
+            <form id="formProduto" onsubmit="salvarProduto(event)">
+                <input type="hidden" id="produtoId">
+                
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Nome do Produto</label>
+                        <input type="text" id="nomeProduto" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Unidade (Ex: 1kg, UN)</label>
+                        <input type="text" id="unidade" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Valor (R$)</label>
+                        <input type="number" id="valorProduto" step="0.01" required>
+                    </div>
+                    <div class="input-group checkbox-group">
+                        <input type="checkbox" id="ativo" checked>
+                        <label for="ativo">Produto Ativo na Loja</label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="limparFormulario()">Cancelar Edição</button>
+                    <button type="submit" class="btn">Salvar Produto</button>
+                </div>
+            </form>
+        </section>
 
-    <script>
-        document.getElementById('formUpload').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Evita que a página recarregue
-            
-            const inputArquivo = document.getElementById('arquivoCSV');
-            const divMensagem = document.getElementById('mensagem');
-            
-            const formData = new FormData();
-            formData.append('arquivo', inputArquivo.files[0]);
+        <!-- BLOCO 3: TABELA DE PRODUTOS CADASTRADOS -->
+        <section class="card">
+            <h2>Produtos Cadastrados</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Unid.</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <!-- JS vai injetar os itens aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-            // Mostra mensagem de carregamento
-            divMensagem.style.display = 'block';
-            divMensagem.className = '';
-            divMensagem.innerText = '⏳ Enviando para o servidor...';
-
-            try {
-                // Dispara a requisição para a sua API
-                const resposta = await fetch('http://localhost:3000/api/upload-csv', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const dados = await resposta.json();
-
-                // Verifica se o servidor retornou sucesso (status 201)
-                if (resposta.ok) {
-                    divMensagem.className = 'sucesso';
-                    divMensagem.innerText = `✅ Sucesso! ${dados.mensagem}`;
-                    inputArquivo.value = ''; // Limpa o input
-                } else {
-                    divMensagem.className = 'erro';
-                    divMensagem.innerText = `❌ Erro: ${dados.erro}`;
-                }
-            } catch (erro) {
-                divMensagem.className = 'erro';
-                divMensagem.innerText = '❌ Erro crítico: O servidor está rodando?';
-            }
-        });
-    </script>
-
+    <script src="gestao.js"></script>
 </body>
 </html>
