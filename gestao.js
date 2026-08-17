@@ -1,4 +1,3 @@
-const API_URL = 'http://localhost:3000/api/registros';
 let listaDeProdutos = [];
 let dadosPlanilhaMemoria = []; // Guarda o JSON do CSV temporariamente
 
@@ -6,7 +5,7 @@ let dadosPlanilhaMemoria = []; // Guarda o JSON do CSV temporariamente
 
 async function carregarProdutos() {
     try {
-        const resposta = await fetch(API_URL);
+        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/produtos');
         listaDeProdutos = await resposta.json();
         renderizarTabela();
     } catch (erro) {
@@ -57,14 +56,14 @@ async function salvarProduto(event) {
         let resposta;
         if (id) {
             // Se tem ID, é Edição (PUT)
-            resposta = await fetch(`${API_URL}/${id}`, {
+            resposta = await fetch(`'https://sos-alimentos-webpage-servidor.onrender.com/api/produtos'/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosFormulario)
             });
         } else {
             // Se não tem ID, é Criação (POST manual)
-            resposta = await fetch(API_URL, {
+            resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/produtos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosFormulario)
@@ -105,7 +104,7 @@ async function deletarProduto(id) {
     if (!confirm('Tem certeza que deseja apagar este produto? Essa ação não pode ser desfeita.')) return;
 
     try {
-        const resposta = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        const resposta = await fetch(`'https://sos-alimentos-webpage-servidor.onrender.com/api/produtos'/${id}`, { method: 'DELETE' });
         if (resposta.ok) {
             carregarProdutos(); // Atualiza a tabela tirando o item
         }
@@ -134,7 +133,7 @@ async function preVisualizarCSV() {
 
     try {
         // Envia para a nossa rota de Preview
-        const resposta = await fetch(`${API_URL}/preview-csv`, {
+        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/registros/preview-csv', {
             method: 'POST',
             body: formData
         });
@@ -172,7 +171,7 @@ async function confirmarImportacao() {
 
     try {
         // Envia o JSON finalizado para o Bulk Insert (salvamento em massa)
-        const resposta = await fetch(`${API_URL}/importar`, {
+        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/registros/importar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosPlanilhaMemoria)
