@@ -1,3 +1,8 @@
+//ACORDA
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
+
 // ============================================================
 // CARROSSEL DE BANNERS
 // (mantido como estava — não é prioridade no momento)
