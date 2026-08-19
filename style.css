@@ -433,3 +433,10 @@ tbody tr:hover {
 /* Utilitários */
 .hidden { display: none !important; }
 .mt-1 { margin-top: 15px; }
+
+.abas { display: flex; gap: 10px; margin-top: 1rem; }
+.tab-btn { background: transparent; color: #a3cfbb; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; }
+.tab-btn:hover { color: white; }
+.tab-btn.ativo { color: white; border-bottom: 3px solid white; }
+.input-tabela { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+.input-curto { max-width: 90px; }

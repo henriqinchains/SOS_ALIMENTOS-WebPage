@@ -3,77 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Produtos</title>
+    <title>Gestão SOS Alimentos</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header-admin">
         <h1>Painel de Gestão - SOS Alimentos</h1>
+        
+        <!-- NAVEGAÇÃO ENTRE AS OPÇÕES -->
+        <nav class="abas">
+            <button class="tab-btn ativo" onclick="mudarAba('vitrine')">🛒 Gerenciar Vitrine</button>
+            <button class="tab-btn" onclick="mudarAba('importacao')">📁 Sincronizar Planilha (CSV)</button>
+        </nav>
     </header>
 
     <main class="container">
-        <!-- BLOCO 1: IMPORTAÇÃO DE PLANILHA -->
-        <section class="card">
-            <h2>Importar Planilha (CSV)</h2>
-            <div class="upload-area">
-                <input type="file" id="arquivoCsv" accept=".csv">
-                <button class="btn" onclick="preVisualizarCSV()">Ler Planilha</button>
+        
+        <!-- ========================================== -->
+        <!-- OPÇÃO 1: GERENCIAR VITRINE (CRUD MANUAL)   -->
+        <!-- ========================================== -->
+        <section id="aba-vitrine" class="card aba-conteudo">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Produtos Ativos na Vitrine</h2>
+                <button class="btn" onclick="prepararNovoProduto()">+ Novo Produto Manual</button>
             </div>
             
-            <div id="areaPreview" class="hidden">
-                <h3>Revisão de Importação</h3>
-                <div class="table-container">
-                    <table id="tabelaPreview">
-                        <thead>
-                            <tr>
-                                <th>Nome Limpo</th>
-                                <th>Unidade</th>
-                                <th>Preço</th>
-                                <th>Ativo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoPreview"></tbody>
-                    </table>
-                </div>
-                <button class="btn btn-success mt-1" onclick="confirmarImportacao()">Confirmar e Salvar no Banco</button>
+            <!-- Formulário Oculto (Abre quando clica em Novo ou Editar) -->
+            <div id="formManual" class="hidden" style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #dee2e6;">
+                <h3 id="tituloFormulario" style="margin-bottom: 1rem; color: #0f5132;">Cadastrar Novo Produto</h3>
+                <form id="formProduto" onsubmit="salvarProduto(event)">
+                    <input type="hidden" id="produtoId">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nome do Produto</label>
+                            <input type="text" id="nomeProduto" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Unidade</label>
+                            <input type="text" id="unidade" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Preço (R$)</label>
+                            <input type="number" id="valorProduto" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 1rem;">
+                        <button type="button" class="btn btn-outline" onclick="fecharFormulario()">Cancelar</button>
+                        <button type="submit" class="btn">Salvar no Banco</button>
+                    </div>
+                </form>
             </div>
-        </section>
 
-        <!-- BLOCO 2: FORMULÁRIO MANUAL (Criar e Editar) -->
-        <section class="card">
-            <h2 id="tituloFormulario">Cadastrar Novo Produto</h2>
-            <form id="formProduto" onsubmit="salvarProduto(event)">
-                <input type="hidden" id="produtoId">
-                
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Nome do Produto</label>
-                        <input type="text" id="nomeProduto" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Unidade (Ex: 1kg, UN)</label>
-                        <input type="text" id="unidade" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Valor (R$)</label>
-                        <input type="number" id="valorProduto" step="0.01" required>
-                    </div>
-                    <div class="input-group checkbox-group">
-                        <input type="checkbox" id="ativo" checked>
-                        <label for="ativo">Produto Ativo na Loja</label>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="limparFormulario()">Cancelar Edição</button>
-                    <button type="submit" class="btn">Salvar Produto</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- BLOCO 3: TABELA DE PRODUTOS CADASTRADOS -->
-        <section class="card">
-            <h2>Produtos Cadastrados</h2>
             <div class="table-container">
                 <table>
                     <thead>
@@ -86,11 +66,48 @@
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
-                        <!-- JS vai injetar os itens aqui -->
+                        <!-- Itens da vitrine entram aqui -->
                     </tbody>
                 </table>
             </div>
         </section>
+
+
+        <!-- ========================================== -->
+        <!-- OPÇÃO 2: IMPORTAÇÃO E PREVIEW DO CSV       -->
+        <!-- ========================================== -->
+        <section id="aba-importacao" class="card aba-conteudo hidden">
+            <h2>Sincronização de Estoque (CSV)</h2>
+            <p style="color: #666; margin-bottom: 1.5rem;">Faça o upload do relatório do sistema. Produtos existentes terão o preço atualizado. Novos produtos serão criados automaticamente.</p>
+            
+            <div class="upload-area">
+                <input type="file" id="arquivoCsv" accept=".csv, .txt">
+                <button class="btn" onclick="preVisualizarCSV()">Ler Planilha</button>
+            </div>
+            
+            <div id="areaPreview" class="hidden" style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Revisão: Formate os nomes antes de enviar para a vitrine</h3>
+                
+                <div class="table-container">
+                    <table id="tabelaPreview">
+                        <thead>
+                            <tr>
+                                <th>ID ERP</th>
+                                <th>Nome Final (Pode editar)</th>
+                                <th>Unidade</th>
+                                <th>Preço (R$)</th>
+                                <th>Ativo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoPreview">
+                            <!-- Tabela editável entra aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-success" style="margin-top: 1.5rem; width: 100%; padding: 15px; font-size: 16px;" onclick="confirmarImportacao()">Confirmar e Sincronizar Tudo</button>
+            </div>
+        </section>
+
     </main>
 
     <script src="gestao.js"></script>

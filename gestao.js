@@ -196,3 +196,27 @@ async function confirmarImportacao() {
 
 // Inicialização: carrega os produtos assim que a página abrir
 document.addEventListener('DOMContentLoaded', carregarProdutos);
+
+// Troca entre as abas do sistema
+function mudarAba(abaId) {
+    // Esconde tudo
+    document.querySelectorAll('.aba-conteudo').forEach(aba => aba.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
+    
+    // Mostra só a que clicou
+    document.getElementById(`aba-${abaId}`).classList.remove('hidden');
+    // Descobre quem disparou o evento (o botão) e adiciona a classe ativo
+    event.currentTarget.classList.add('ativo');
+}
+
+// Funções para abrir e fechar o formulário manual da vitrine
+function prepararNovoProduto() {
+    document.getElementById('formManual').classList.remove('hidden');
+    document.getElementById('formProduto').reset();
+    document.getElementById('produtoId').value = '';
+    document.getElementById('tituloFormulario').innerText = 'Cadastrar Novo Produto';
+}
+
+function fecharFormulario() {
+    document.getElementById('formManual').classList.add('hidden');
+}
