@@ -20,9 +20,14 @@
     font-family: system-ui, -apple-system, sans-serif;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--fundo);
     color: var(--texto-escuro);
+    overflow-x: hidden;
 }
 
 /* ==========================
@@ -39,44 +44,80 @@ header {
 .nav-bar-principal {
     background-color: var(--primaria);
     color: var(--branco);
-    padding: 8px 5%;
-    font-size: 0.85rem;
+    padding: 6px 5%;
+    font-size: 0.8rem;
     font-weight: 500;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+.first-line {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 
 .nav-bar-principal a {
     color: var(--branco);
     text-decoration: none;
-    margin-right: 15px;
     opacity: 0.9;
 }
 
 .nav-bar-secundaria {
-    padding: 15px 5%;
+    padding: 12px 5%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    gap: 10px 20px;
 }
 
 .nav-bar-secundaria h2 {
     color: var(--primaria);
     font-weight: 800;
     letter-spacing: -1px;
+    font-size: 1.3rem;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 14px;
 }
 
 .nav-links a {
     text-decoration: none;
     color: var(--texto-escuro);
     font-weight: 600;
-    margin: 0 15px;
+    font-size: 0.9rem;
+    margin: 0;
     transition: color 0.2s;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
     color: var(--primaria);
+}
+
+@media (max-width: 480px) {
+    .nav-bar-principal {
+        font-size: 0.72rem;
+        gap: 14px;
+    }
+
+    .nav-bar-secundaria {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .nav-bar-secundaria h2 {
+        font-size: 1.15rem;
+    }
+
+    .nav-links a {
+        font-size: 0.82rem;
+    }
 }
 
 /* ==========================
@@ -128,6 +169,28 @@ header {
     box-shadow: var(--sombra);
 }
 
+@media (max-width: 600px) {
+    .carrossel {
+        height: 200px;
+        border-radius: 12px;
+    }
+
+    .slide {
+        font-size: 1.1rem;
+        padding: 0 15px;
+        text-align: center;
+    }
+
+    .botao-ant, .botao-prox {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .botao-ant { left: 10px; }
+    .botao-prox { right: 10px; }
+}
+
 .slide {
     position: absolute;
     width: 100%;
@@ -175,28 +238,50 @@ header {
 .pesquisa-container {
     display: flex;
     max-width: 600px;
-    margin: 25px auto 35px auto;
+    margin: 20px auto 30px auto;
     box-shadow: var(--sombra);
     border-radius: 30px;
     overflow: hidden;
+    background: var(--branco);
 }
 
-#search-input {
+@media (max-width: 420px) {
+    .pesquisa-container {
+        border-radius: 14px;
+    }
+
+    .pesquisa-container input {
+        padding: 13px 16px;
+        font-size: 0.95rem;
+    }
+
+    .btn-pesquisar {
+        padding: 0 16px;
+        font-size: 0.9rem;
+    }
+}
+
+.pesquisa-container input {
     flex: 1;
-    padding: 15px 25px;
+    min-width: 0;
+    padding: 15px 20px;
     border: none;
     outline: none;
     font-size: 1rem;
+    background: var(--branco);
+    color: var(--texto-escuro);
 }
 
 .btn-pesquisar {
-    padding: 0 30px;
+    padding: 0 24px;
     background: var(--primaria);
     color: var(--branco);
     border: none;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .btn-pesquisar:hover {
@@ -294,11 +379,77 @@ header {
     text-transform: uppercase;
 }
 
+/* No celular, o card vira uma linha horizontal (foto à esquerda, dados à direita) */
+@media (max-width: 699px) {
+    .produto-card {
+        display: grid;
+        grid-template-columns: 88px 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        text-align: left;
+        padding: 14px;
+    }
+
+    .produto-card:hover {
+        transform: none;
+    }
+
+    .img-placeholder {
+        grid-row: 1 / 4;
+        width: 88px;
+        height: 88px;
+        margin-bottom: 0;
+        font-size: 0.7rem;
+    }
+
+    .produto-card h3 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+    }
+
+    .unidade {
+        margin-bottom: 4px;
+        font-size: 0.8rem;
+    }
+
+    .preco {
+        font-size: 1.15rem;
+    }
+
+    .selo-promocao {
+        top: 6px;
+        left: 6px;
+        right: auto;
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+}
+
 .msg-estado {
     grid-column: 1 / -1;
     text-align: center;
     color: var(--texto-claro);
     padding: 30px 0;
+    line-height: 1.6;
+}
+
+.btn-tentar-novamente {
+    margin-top: 12px;
+    padding: 10px 22px;
+    background: var(--primaria);
+    color: var(--branco);
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-tentar-novamente:hover {
+    background: #c62828;
 }
 
 /* ==========================
