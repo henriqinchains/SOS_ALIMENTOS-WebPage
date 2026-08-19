@@ -1,620 +1,435 @@
-/* ============================================================
-   SOS ALIMENTOS — estilo inspirado em supermercados online
-   Paleta: verde-folha (fresh food) + laranja (ofertas/urgência)
-   ============================================================ */
-
+/* ==========================
+   1. VARIÁVEIS E RESET
+   ========================== */
 :root {
-  --verde-900: #1b4d2e;
-  --verde-700: #2e7d46;
-  --verde-100: #d4d1d1;
-  --laranja-600: #ef6c1a;
-  --laranja-500: #ff8c3a;
-  --cinza-900: #22281f;
-  --cinza-600: #5c6b58;
-  --cinza-200: #e4e8e0;
-  --branco: #eaf5ee;
-
-
-  --fonte-display: 'Poppins', 'Segoe UI', sans-serif;
-  --fonte-texto: 'Inter', 'Segoe UI', sans-serif;
-
-  --raio: 10px;
-  --sombra: 0 2px 10px rgba(27, 77, 46, 0.10);
-  --sombra-forte: 0 8px 24px rgba(27, 77, 46, 0.18);
+    --primaria: #e53935; /* Vermelho mercadinho */
+    --secundaria: #ff9800; /* Laranja ofertas */
+    --fundo: #f4f6f8;
+    --texto-escuro: #2d3436;
+    --texto-claro: #636e72;
+    --branco: #ffffff;
+    --borda: #dfe6e9;
+    --sombra: 0 4px 15px rgba(0,0,0,0.05);
+    --sombra-hover: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
 body {
-  font-family: var(--fonte-texto);
-  color: var(--cinza-900);
-  background: var(--verde-100);
-  -webkit-font-smoothing: antialiased;
+    background-color: var(--fundo);
+    color: var(--texto-escuro);
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-li {
-  list-style: none;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-/* ============================================================
-   HEADER
-   ============================================================ */
-
+/* ==========================
+   2. HEADER MODERNO
+   ========================== */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+    background: var(--branco);
+    box-shadow: var(--sombra);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-/* Barra superior fina (institucional) */
 .nav-bar-principal {
-  background: var(--verde-900);
-  color: var(--branco);
+    background-color: var(--primaria);
+    color: var(--branco);
+    padding: 8px 5%;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
 }
 
-.nav-bar-principal nav {
-  max-width: none;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* FIX: clamp() faz padding/font-size encolherem de forma contínua com a viewport,
-     em vez de saltar de valor só nos breakpoints */
-  padding: clamp(4px, 1vw, 6px) clamp(14px, 3vw, 24px);
-  font-size: clamp(0.68rem, 1.2vw, 0.78rem);
-  letter-spacing: 0.03em;
-  transition: padding 0.25s ease, font-size 0.25s ease;
+.nav-bar-principal a {
+    color: var(--branco);
+    text-decoration: none;
+    margin-right: 15px;
+    opacity: 0.9;
 }
 
-.left-first-line,
-.right-first-line {
-  display: flex;
-  gap: clamp(8px, 2vw, 20px);
-  transition: gap 0.25s ease;
-}
-
-.left-first-line li a,
-.right-first-line li a {
-  opacity: 0.85;
-  transition: opacity 0.15s ease;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-.left-first-line li a:hover,
-.right-first-line li a:hover {
-  opacity: 1;
-  color: var(--laranja-500);
-}
-
-/* Barra principal com logo, busca e navegação */
 .nav-bar-secundaria {
-  background: var(--branco);
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 2.5vw, 24px);
-  padding: clamp(12px, 2vw, 14px) clamp(14px, 3vw, 24px);
-  max-width: none;
-  margin: 0 auto;
-  border-bottom: 3px solid var(--verde-700);
-  flex-wrap: wrap;
-  transition: gap 0.25s ease, padding 0.25s ease;
+    padding: 15px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
-.logo img {
-  /* FIX: escala contínua em vez de pulo abrupto de 44px pra outro valor no breakpoint */
-  height: clamp(32px, 5vw, 44px);
-  display: block;
-  transition: height 0.25s ease;
-}
-
-/* Botão "Todos os departamentos" */
-.hamburguer-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* FIX: centraliza conteúdo dentro do botão em qualquer tamanho */
-  gap: clamp(0px, 1vw, 8px);
-  background: var(--verde-700);
-  color: var(--branco);
-  font-weight: 600;
-  font-size: clamp(0rem, 1.5vw, 0.85rem);
-  padding: 10px clamp(10px, 2vw, 16px);
-  border-radius: var(--raio);
-  white-space: nowrap;
-  transition: background 0.15s ease, padding 0.25s ease, font-size 0.25s ease, gap 0.25s ease;
-}
-
-.hamburguer-btn:hover {
-  background: var(--verde-900);
-}
-
-.hamburguer-btn svg {
-  stroke: var(--branco);
-  flex-shrink: 0;
-}
-
-/* Links centrais */
-.nav-links {
-  display: flex;
-  gap: clamp(12px, 2vw, 22px);
-  font-size: clamp(0.82rem, 1.3vw, 0.92rem);
-  font-weight: 600;
-  color: var(--verde-900);
-  transition: gap 0.25s ease, font-size 0.25s ease;
+.nav-bar-secundaria h2 {
+    color: var(--primaria);
+    font-weight: 800;
+    letter-spacing: -1px;
 }
 
 .nav-links a {
-  position: relative;
-  padding: 6px 0;
-}
-
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 0;
-  background: var(--laranja-600);
-  transition: width 0.2s ease;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
+    text-decoration: none;
+    color: var(--texto-escuro);
+    font-weight: 600;
+    margin: 0 15px;
+    transition: color 0.2s;
 }
 
 .nav-links a:hover {
-  color: var(--laranja-600);
+    color: var(--primaria);
 }
 
-/* Busca */
-.pesquisa {
-  display: flex;
-  align-items: center;
-  flex: 1 1 320px;
-  max-width: 480px;
-  margin-left: auto;
-  background: var(--verde-100);
-  border: 1.5px solid var(--cinza-200);
-  border-radius: 999px;
-  padding: 4px 4px 4px 18px;
-  transition: border-color 0.15s ease;
+/* ==========================
+   3. LÓGICA SPA E LAYOUT
+   ========================== */
+.page {
+    display: none;
+    padding: 40px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
 }
 
-.pesquisa:focus-within {
-  border-color: var(--verde-700);
+.page.active {
+    display: block;
 }
 
-.pesquisa input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.9rem;
-  color: var(--cinza-900);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.pesquisa input::placeholder {
-  color: var(--cinza-600);
+.titulo-pagina {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.8rem;
+    color: var(--texto-escuro);
 }
 
-.pesquisa button {
-  background: var(--laranja-600);
-  color: var(--branco);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease;
-}
-
-.pesquisa button:hover {
-  background: var(--laranja-500);
-}
-
-.pesquisa button svg {
-  stroke: var(--branco);
-  width: 18px;
-  height: 18px;
-}
-
-/* ============================================================
-   BANNER / CARROSSEL
-   ============================================================ */
-
-.banner-carrossel {
-  position: relative;
-  width: 100%;
-  max-width: 1250px;
-  max-height: 325px;
-  /* FIX: margem escala com a viewport em vez de pular de 20px pra 12px no breakpoint */
-  margin: clamp(12px, 2vw, 20px) auto;
-  border-radius: clamp(12px, 1.5vw, 16px);
-  overflow: hidden;
-  box-shadow: var(--sombra-forte);
-  aspect-ratio: 16 / 5;
-  background: var(--verde-700);
-  transition: margin 0.25s ease, border-radius 0.25s ease, aspect-ratio 0.25s ease;
-}
-
-.slides {
-  position: relative;
-  width: 100%;
-  height: 100%;
+/* ==========================
+   4. CARROSSEL (OFERTAS)
+   ========================== */
+.carrossel {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
 }
 
 .slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.5s ease;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: var(--branco);
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.6s ease;
 }
 
-.slide.ativo {
-  opacity: 1;
-  visibility: visible;
+.slide.ativo { opacity: 1; }
+
+.botao-ant, .botao-prox {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.8);
+    color: var(--texto-escuro);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: 0.2s;
+    box-shadow: var(--sombra);
 }
 
-.slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.botao-ant:hover, .botao-prox:hover {
+    background: var(--branco);
+    transform: translateY(-50%) scale(1.1);
 }
 
-.banner-carrossel .botao-ant,
-.banner-carrossel .botao-prox {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(27, 77, 46, 0.55);
-  color: var(--branco);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s ease, background 0.15s ease, transform 0.2s ease;
-  z-index: 5;
+.botao-ant { left: 20px; }
+.botao-prox { right: 20px; }
 
-  opacity: 0;
-  visibility: hidden;
+/* ==========================
+   5. GRID DE PRODUTOS E BUSCA
+   ========================== */
+.pesquisa-container {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    box-shadow: var(--sombra);
+    border-radius: 30px;
+    overflow: hidden;
 }
 
-.banner-carrossel:hover .botao-ant,
-.banner-carrossel:hover .botao-prox {
-  opacity: 1;
-  visibility: visible;
+#search-input {
+    flex: 1;
+    padding: 15px 25px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
 }
 
-.botao-ant:hover,
-.botao-prox:hover {
-  background: var(--cinza-900);
+.btn-pesquisar {
+    padding: 0 30px;
+    background: var(--primaria);
+    color: var(--branco);
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.banner-carrossel .botao-ant {
-  left: 16px;
+.btn-pesquisar:hover {
+    background: #c62828;
 }
 
-.banner-carrossel .botao-prox {
-  right: 16px;
+/* Grid Fluido e Responsivo */
+.grid-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
 }
 
-/* ============================================================
-   SEÇÃO OFERTAS
-   ============================================================ */
-
-.secao-produtos {
-  max-width: 1280px;
-  margin: 0 auto 40px;
-  padding: 0 clamp(14px, 3vw, 24px);
-  transition: padding 0.25s ease;
-}
-
-.barra-superior {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  position: relative;
-}
-
-.barra-superior p {
-  font-family: var(--fonte-display);
-  /* FIX: título escala suavemente em vez de saltar de 1.4rem pra 1.15rem no breakpoint */
-  font-size: clamp(1.15rem, 2.5vw, 1.4rem);
-  font-weight: 700;
-  color: var(--verde-900);
-  position: relative;
-  padding-left: 14px;
-  transition: font-size 0.25s ease;
-}
-
-/* Tag de destaque à esquerda do título — o "selo" da seção */
-.barra-superior p::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 5px;
-  border-radius: 4px;
-  background: var(--laranja-600);
-}
-
-.barra-superior button {
-  color: var(--cinza-600);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.barra-superior button:hover {
-  background: var(--verde-100);
-  color: var(--verde-700);
-}
-
-.barra-superior button[title="Compartilhar corredor"] {
-  margin-left: auto;
-}
-
-.barra-superior .botao-ant,
-.barra-superior .botao-prox {
-  position: static;
-  transform: none;
-  background: var(--verde-100);
-  color: var(--verde-700);
-  width: 34px;
-  height: 34px;
-  font-size: 1rem;
-}
-
-.barra-superior .botao-ant:hover,
-.barra-superior .botao-prox:hover {
-  background: var(--verde-700);
-  color: var(--branco);
-}
-
-/* Grade de produtos (preenchida via JS) */
-.itens-horizontal {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  min-height: 120px;
-  padding-bottom: 16px;
-  scroll-behavior: smooth;
-}
-
-.itens-horizontal:empty::after {
-  content: "Carregando ofertas...";
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--cinza-600);
-  font-size: 0.9rem;
-  padding: 32px 0;
-}
-
-.itens-horizontal::-webkit-scrollbar {
-  height: 10px;
-}
-
-.itens-horizontal::-webkit-scrollbar-track {
-  background: var(--cinza-200);
-  border-radius: 5px;
-}
-
-.itens-horizontal::-webkit-scrollbar-thumb {
-  background: var(--verde-700);
-  border-radius: 5px;
-}
-
-.itens-horizontal::-webkit-scrollbar-thumb:hover {
-  background: var(--verde-900);
-}
-
-/* Cartão de produto (classe sugerida para uso via JS) */
 .produto-card {
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  padding: 16px;
-  background-color: #ffffff;
-  flex: 0 0 260px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  font-family: sans-serif;
-  transition: box-shadow 0.2s ease;
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--borda);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .produto-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-hover);
 }
 
-/* Cabeçalho do Card (Ícones) */
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #a1a1aa;
-}
-
-.icones-acao {
-  display: flex;
-  gap: 12px;
-}
-
-.icones-acao svg {
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.icones-acao svg:hover {
-  color: #3f3f46;
-}
-
-/* Imagem e Textos */
-.produto-imagem img {
-  width: 100%;
-  height: 180px;
-  object-fit: contain;
-}
-
-.info-titulo {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  /* Espaço bem pequeno entre o nome e o peso */
-}
-
-.produto-titulo {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--cinza-900);
-  line-height: 1.3;
-  /* Limita a 2 linhas pra não quebrar a altura do card */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.produto-unidade {
-  font-size: 13px;
-  font-weight: 500;
-  color: #71717a;
-  /* Um cinza um pouco mais escuro para leitura */
-}
-
-.sem-produtos {
-  text-align: center;
-  color: var(--cinza-600);
-  padding: 40px 0;
-  font-size: 0.95rem;
-}
-
-/* Preços */
-.info-preco {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.preco-antigo-linha {
-  font-size: 14px;
-}
-
-.preco-riscado {
-  text-decoration: line-through;
-  color: #a1a1aa;
-}
-
-.preco-atual-linha {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #a1a1aa;
-}
-
-.preco-destaque {
-  color: #84cc16;
-  /* Verde forte */
-  font-size: 24px;
-  font-weight: 800;
-  margin-right: 4px;
-}
-
-.badge-desconto {
-  background-color: #ef4444;
-  /* Vermelho */
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 700;
-  margin-left: 8px;
-}
-
-/* ============================================================
-   RESPONSIVO
-   Observação: os tamanhos (fonte, padding, altura, margem) agora
-   escalam de forma contínua via clamp() nos seletores-base acima.
-   As media queries abaixo cuidam só de mudanças ESTRUTURAIS
-   (quebra de linha, ordem, display) que não têm como ser
-   interpoladas suavemente — não existe "meio-termo" entre um
-   elemento estar numa linha ou quebrado embaixo.
-   ============================================================ */
-
-@media (max-width: 1100px) {
-
-  .nav-links {
-    order: 3;
+.img-placeholder {
     width: 100%;
-    justify-content: space-between;
-    padding-top: 10px;
-    border-top: 1px solid var(--cinza-200);
-  }
-
-  .pesquisa {
-    max-width: none;
-    margin-left: 0;
-    order: 2;
-    flex: 1 1 100%;
-  }
+    height: 180px;
+    background: var(--fundo);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-claro);
+    font-weight: 500;
 }
 
-@media (max-width: 600px) {
-  .hamburguer-btn {
-    width: 48px;
-    height: 48px;
-    padding: 0;
-    gap: 0;
-  }
-
-  .hamburguer-texto {
-    display: none;
-  }
-
-  .hamburguer-btn svg {
-    margin: 0;
-  }
+.produto-card h3 {
+    font-size: 1.1rem;
+    color: var(--texto-escuro);
+    margin-bottom: 10px;
 }
 
-a:focus-visible,
-button:focus-visible,
-input:focus-visible {
-  outline: 2px solid var(--laranja-600);
-  outline-offset: 2px;
+.preco {
+    color: var(--primaria);
+    font-size: 1.4rem;
+    font-weight: 800;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-  }
+/* ==========================
+   6. PÁGINA DE GESTÃO (ADMIN)
+   ========================== */
+
+/* Header Admin Simplificado */
+.header-admin {
+    background-color: var(--branco);
+    padding: 25px 5%;
+    text-align: center;
+    box-shadow: var(--sombra);
+    border-bottom: 3px solid var(--primaria);
+    margin-bottom: 40px;
 }
+
+.header-admin h1 {
+    color: var(--texto-escuro);
+    font-size: 1.8rem;
+}
+
+/* Container e Cards */
+.container {
+    max-width: 1000px;
+    margin: 0 auto 60px auto;
+    padding: 0 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.card {
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--sombra);
+    border: 1px solid var(--borda);
+}
+
+.card h2 {
+    color: var(--primaria);
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--fundo);
+    padding-bottom: 10px;
+}
+
+.card h3 {
+    margin: 20px 0 15px 0;
+    color: var(--texto-escuro);
+    font-size: 1.1rem;
+}
+
+/* Área de Upload */
+.upload-area {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: var(--fundo);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed #b2bec3;
+}
+
+.upload-area input[type="file"] {
+    flex: 1;
+    font-size: 1rem;
+}
+
+/* Formulário (Grid e Inputs) */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--texto-claro);
+}
+
+.input-group input {
+    padding: 12px 15px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.2s;
+    background-color: var(--fundo);
+}
+
+.input-group input:focus {
+    border-color: var(--primaria);
+    background-color: var(--branco);
+}
+
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.checkbox-group input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primaria);
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    cursor: pointer;
+    color: var(--texto-escuro);
+}
+
+/* Botões */
+.btn {
+    padding: 12px 24px;
+    background: var(--primaria);
+    color: var(--branco);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover { background: #c62828; }
+
+.btn-outline {
+    background: transparent;
+    color: var(--texto-claro);
+    border: 1px solid var(--borda);
+}
+
+.btn-outline:hover {
+    background: var(--fundo);
+    color: var(--texto-escuro);
+}
+
+.btn-success {
+    background: #10ac84;
+}
+
+.btn-success:hover { background: #01a3a4; }
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+/* Tabelas (Preview e Produtos) */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Responsivo para celular */
+    border-radius: 8px;
+    border: 1px solid var(--borda);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead {
+    background-color: var(--fundo);
+}
+
+th, td {
+    padding: 15px;
+    border-bottom: 1px solid var(--borda);
+    color: var(--texto-escuro);
+}
+
+th {
+    font-weight: 600;
+    color: var(--texto-claro);
+}
+
+tbody tr:hover {
+    background-color: #fafbfc;
+}
+
+/* Utilitários */
+.hidden { display: none !important; }
+.mt-1 { margin-top: 15px; }

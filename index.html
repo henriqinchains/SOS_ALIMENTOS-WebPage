@@ -10,64 +10,94 @@
 
 <body>
     <header>
+        <!-- Navegação Principal -->
         <div class="nav-bar-principal">
             <nav>
-                <div class="left-first-line">
-                    <a href="#">MERCADO</a>
-                    <a href="#">CONTATO</a>
-                </div>
-                <div class="right-first-line">
+                <div class="first-line">
                     <a href="#">WHATSAPP</a>
                     <a href="#">INSTAGRAM</a>
                 </div>
             </nav>
         </div>
+        
+        <!-- Navegação Secundária -->
         <div class="nav-bar-secundaria">
-            <button id="btnHamburguer" class="hamburguer-btn">
-                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-                <span class="hamburguer-texto">Todos os departamentos</span></button>
             <div class="logo">
-                <img src="img/logo.png" alt="Logo">
+                <h2>SOS ALIMENTOS</h2>
             </div>
             <div class="nav-links">
-                <a href="#">Ofertas da semana</a>
-                <a href="#">Favoritos</a>
-                <a href="#">Folhetos</a>
-                <a href="./gestao.html">Gestão</a>
-            </div>
-            <div class="pesquisa">
-                <input type="text" placeholder="O que você está procurando?" id="search-input">
-                <button
-                    class="size-7 md:size-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200"
-                    title="Buscar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" class="lucide lucide-search h-4 w-4" aria-hidden="true">
-                        <path d="m21 21-4.34-4.34"></path>
-                        <circle cx="11" cy="11" r="8"></circle>
-                    </svg></button>
+                <a href="#ofertas">Ofertas da semana</a>
+                <a href="#produtos">Produtos</a>
+                <a href="gestao.html">Gestão</a>
             </div>
         </div>
     </header>
 
-    <div id="banner-carrossel" class="banner-carrossel">
-        <div class="slides">
-            <div class="slide ativo"><img src="banner1.jpg" alt="Banner 1"></div>
-            <div class="slide"><img src="banner2.jpg" alt="Banner 2"></div>
-            <div class="slide"><img src="banner3.jpg" alt="Banner 3"></div>
-        </div>
-        <button class="botao-ant" onclick="mudarSlide(-1)">&#10094;</button>
-        <button class="botao-prox" onclick="mudarSlide(1)">&#10095;</button>
-    </div>
+    <!-- Container Principal do SPA -->
+    <main id="app">
+        
+        <!-- PÁGINA 1: OFERTAS (CARROSSEL) -->
+        <section id="ofertas" class="page active">
+            <div class="titulo-pagina">
+                <h2>Ofertas em Destaque</h2>
+            </div>
+            
+            <!-- Carrossel Padrão -->
+            <div id="banner-carrossel" class="carrossel">
+                <div class="slides-container">
+                    <!-- Substitua as URLs pelas suas imagens -->
+                    <div class="slide ativo" style="background-color: #ff9f43;">Banner 1: Quarta das Frutas</div>
+                    <div class="slide" style="background-color: #ee5253;">Banner 2: Fim de Semana da Carne</div>
+                    <div class="slide" style="background-color: #10ac84;">Banner 3: Limpeza em Promoção</div>
+                </div>
+                <button class="botao-ant" onclick="mudarSlide(-1)">&#10094;</button>
+                <button class="botao-prox" onclick="mudarSlide(1)">&#10095;</button>
+            </div>
+        </section>
 
-    <main id="secoes-produtos">
+        <!-- PÁGINA 2: PRODUTOS (PESQUISA + GRID) -->
+        <section id="produtos" class="page">
+            <div class="titulo-pagina">
+                <h2>Nossos Produtos</h2>
+            </div>
+            
+            <!-- Caixa de Pesquisa -->
+            <div class="pesquisa-container">
+                <input type="text" id="search-input" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <button class="btn-pesquisar">Buscar</button>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="grid-produtos">
+                <div class="produto-card">
+                    <div class="img-placeholder">Foto</div>
+                    <h3>Arroz Tipo 1 (5kg)</h3>
+                    <p class="preco">R$ 24,90</p>
+                </div>
+                <div class="produto-card">
+                    <div class="img-placeholder">Foto</div>
+                    <h3>Feijão Carioca (1kg)</h3>
+                    <p class="preco">R$ 6,99</p>
+                </div>
+                <div class="produto-card">
+                    <div class="img-placeholder">Foto</div>
+                    <h3>Óleo de Soja (900ml)</h3>
+                    <p class="preco">R$ 5,50</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 3: GESTÃO -->
+        <section id="gestao" class="page">
+            <div class="titulo-pagina">
+                <h2>Área de Gestão</h2>
+            </div>
+        </section>
+
     </main>
-</body>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
+
+</body>
 
 </html>
