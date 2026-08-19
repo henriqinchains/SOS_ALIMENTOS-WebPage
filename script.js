@@ -110,15 +110,64 @@ function renderizarProdutos(lista, container, apenasPromocao) {
 }
 
 // Busca os produtos na API e renderiza nas duas abas (Produtos e Promoções)
+// O servidor gratuito do Render "dorme" após um tempo sem uso, então a
+// primeira chamada pode falhar ou demorar — por isso tentamos acordá-lo
+// e refazemos a busca algumas vezes antes de desistir.
+async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const resposta = await fetch(`${API_URL}/health`);
+            if (resposta.ok) return true;
+        } catch (erro) {
+            // servidor ainda dormindo, tenta de novo depois do intervalo
+        }
+        await new Promise(resolve => setTimeout(resolve, intervaloMs));
+    }
+    return false;
+}
+
+function mostrarEstadoCarregando(container, mensagem) {
+    if (container) container.innerHTML = `<p class="msg-estado">${mensagem}</p>`;
+}
+
+function mostrarEstadoErro() {
+    const mensagemErro = `
+        <p class="msg-estado">
+            Não foi possível carregar os produtos.<br>
+            <button class="btn-tentar-novamente" onclick="carregarProdutos()">Tentar novamente</button>
+        </p>
+    `;
+    const gridProdutos = document.getElementById('grid-produtos');
+    const gridPromocoes = document.getElementById('grid-promocoes');
+    if (gridProdutos) gridProdutos.innerHTML = mensagemErro;
+    if (gridPromocoes) gridPromocoes.innerHTML = mensagemErro;
+}
+
 async function carregarProdutos() {
     const gridProdutos = document.getElementById('grid-produtos');
     const gridPromocoes = document.getElementById('grid-promocoes');
 
-    try {
+    mostrarEstadoCarregando(gridProdutos, 'Carregando produtos...');
+    mostrarEstadoCarregando(gridPromocoes, 'Carregando promoções...');
+
+    const tentarBuscar = async () => {
         const resposta = await fetch(`${API_URL}/api/produtos`);
         if (!resposta.ok) throw new Error('Falha ao buscar produtos.');
+        return resposta.json();
+    };
 
-        todosProdutos = await resposta.json();
+    try {
+        try {
+            // Primeira tentativa direta (caso o servidor já esteja acordado)
+            todosProdutos = await tentarBuscar();
+        } catch (primeiroErro) {
+            // Se falhar, avisa que o servidor pode estar acordando e tenta de novo
+            mostrarEstadoCarregando(gridProdutos, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
+            mostrarEstadoCarregando(gridPromocoes, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
+
+            await esperarServidorAcordar();
+            todosProdutos = await tentarBuscar();
+        }
 
         renderizarProdutos(todosProdutos, gridProdutos, false);
 
@@ -127,8 +176,7 @@ async function carregarProdutos() {
 
     } catch (erro) {
         console.error('Erro ao carregar produtos:', erro);
-        if (gridProdutos) gridProdutos.innerHTML = '<p class="msg-estado">Não foi possível carregar os produtos. Tente novamente mais tarde.</p>';
-        if (gridPromocoes) gridPromocoes.innerHTML = '<p class="msg-estado">Não foi possível carregar as promoções. Tente novamente mais tarde.</p>';
+        mostrarEstadoErro();
     }
 }
 
