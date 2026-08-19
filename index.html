@@ -53,6 +53,21 @@
                 <button class="botao-ant" onclick="mudarSlide(-1)">&#10094;</button>
                 <button class="botao-prox" onclick="mudarSlide(1)">&#10095;</button>
             </div>
+
+            <!-- Caixa de Pesquisa -->
+            <div class="pesquisa-container">
+                <input type="text" id="search-input-ofertas" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <button class="btn-pesquisar">Buscar</button>
+            </div>
+
+            <div class="titulo-secao">
+                <h3>Produtos em Promoção</h3>
+            </div>
+
+            <!-- Grid de Produtos em Promoção -->
+            <div class="grid-produtos" id="grid-promocoes">
+                <p class="msg-estado">Carregando promoções...</p>
+            </div>
         </section>
 
         <!-- PÁGINA 2: PRODUTOS (PESQUISA + GRID) -->
@@ -63,27 +78,13 @@
             
             <!-- Caixa de Pesquisa -->
             <div class="pesquisa-container">
-                <input type="text" id="search-input" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <input type="text" id="search-input-produtos" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
                 <button class="btn-pesquisar">Buscar</button>
             </div>
 
             <!-- Grid de Produtos -->
-            <div class="grid-produtos">
-                <div class="produto-card">
-                    <div class="img-placeholder">Foto</div>
-                    <h3>Arroz Tipo 1 (5kg)</h3>
-                    <p class="preco">R$ 24,90</p>
-                </div>
-                <div class="produto-card">
-                    <div class="img-placeholder">Foto</div>
-                    <h3>Feijão Carioca (1kg)</h3>
-                    <p class="preco">R$ 6,99</p>
-                </div>
-                <div class="produto-card">
-                    <div class="img-placeholder">Foto</div>
-                    <h3>Óleo de Soja (900ml)</h3>
-                    <p class="preco">R$ 5,50</p>
-                </div>
+            <div class="grid-produtos" id="grid-produtos">
+                <p class="msg-estado">Carregando produtos...</p>
             </div>
         </section>
 
