@@ -18,6 +18,11 @@ function router() {
     if (pageToShow) {
         pageToShow.classList.add('active');
     }
+
+    // Marca o link correspondente como ativo no menu
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.toggle('ativo', link.getAttribute('href') === hash);
+    });
 }
 
 // Escuta a mudança no link (quando o usuário clica no menu)
@@ -32,6 +37,8 @@ window.addEventListener('load', router);
 // ==========================
 let slideIndex = 0;
 const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let carrosselAutoplay;
 
 function mostrarSlide(index) {
     // Esconde todos os slides
@@ -44,6 +51,8 @@ function mostrarSlide(index) {
     
     // Mostra o slide correto
     slides[slideIndex].classList.add('ativo');
+    dots.forEach(dot => dot.classList.remove('ativo'));
+    if (dots[slideIndex]) dots[slideIndex].classList.add('ativo');
 }
 
 function mudarSlide(step) {
@@ -51,10 +60,23 @@ function mudarSlide(step) {
     mostrarSlide(slideIndex);
 }
 
-// Opcional: Fazer o carrossel passar sozinho a cada 5 segundos
-setInterval(() => {
-    mudarSlide(1);
-}, 5000);
+function irParaSlide(index) {
+    slideIndex = index;
+    mostrarSlide(slideIndex);
+}
+
+function iniciarAutoplay() {
+    carrosselAutoplay = setInterval(() => mudarSlide(1), 5000);
+}
+
+iniciarAutoplay();
+
+// Pausa a troca automática enquanto o usuário está com o mouse em cima
+const carrossel = document.getElementById('banner-carrossel');
+if (carrossel) {
+    carrossel.addEventListener('mouseenter', () => clearInterval(carrosselAutoplay));
+    carrossel.addEventListener('mouseleave', iniciarAutoplay);
+}
 
 
 // ==========================
@@ -126,8 +148,11 @@ async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
     return false;
 }
 
-function mostrarEstadoCarregando(container, mensagem) {
-    if (container) container.innerHTML = `<p class="msg-estado">${mensagem}</p>`;
+function mostrarEsqueletoCarregando(container, quantidade) {
+    if (!container) return;
+    container.innerHTML = Array.from({ length: quantidade })
+        .map(() => '<div class="skeleton-card"></div>')
+        .join('');
 }
 
 function mostrarEstadoErro() {
@@ -147,8 +172,8 @@ async function carregarProdutos() {
     const gridProdutos = document.getElementById('grid-produtos');
     const gridPromocoes = document.getElementById('grid-promocoes');
 
-    mostrarEstadoCarregando(gridProdutos, 'Carregando produtos...');
-    mostrarEstadoCarregando(gridPromocoes, 'Carregando promoções...');
+    mostrarEsqueletoCarregando(gridProdutos, 4);
+    mostrarEsqueletoCarregando(gridPromocoes, 3);
 
     const tentarBuscar = async () => {
         const resposta = await fetch(`${API_URL}/api/produtos`);
@@ -161,10 +186,7 @@ async function carregarProdutos() {
             // Primeira tentativa direta (caso o servidor já esteja acordado)
             todosProdutos = await tentarBuscar();
         } catch (primeiroErro) {
-            // Se falhar, avisa que o servidor pode estar acordando e tenta de novo
-            mostrarEstadoCarregando(gridProdutos, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
-            mostrarEstadoCarregando(gridPromocoes, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
-
+            // Se falhar, tenta acordar o servidor e busca de novo
             await esperarServidorAcordar();
             todosProdutos = await tentarBuscar();
         }
@@ -218,4 +240,7 @@ window.addEventListener('load', () => {
         configurarBusca('search-input-produtos', 'grid-produtos', false);
         configurarBusca('search-input-ofertas', 'grid-promocoes', true);
     });
+
+    const anoAtual = document.getElementById('ano-atual');
+    if (anoAtual) anoAtual.textContent = new Date().getFullYear();
 });
