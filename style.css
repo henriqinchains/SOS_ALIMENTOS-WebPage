@@ -17,7 +17,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, .btn, .btn-pesquisar, .tab-btn {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
 }
 
 html {
@@ -231,6 +235,31 @@ header {
 
 .botao-ant { left: 20px; }
 .botao-prox { right: 20px; }
+
+.carrossel-dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.dot:hover { background: rgba(255,255,255,0.85); }
+
+.dot.ativo {
+    background: var(--branco);
+    transform: scale(1.2);
+}
 
 /* ==========================
    5. GRID DE PRODUTOS E BUSCA
@@ -452,23 +481,143 @@ header {
     background: #c62828;
 }
 
+/* Skeleton (carregando) */
+.skeleton-card {
+    background: var(--branco);
+    border-radius: 12px;
+    height: 260px;
+    border: 1px solid var(--borda);
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.045), transparent);
+    transform: translateX(-100%);
+    animation: brilho 1.4s infinite;
+}
+
+@keyframes brilho {
+    100% { transform: translateX(100%); }
+}
+
+@media (max-width: 699px) {
+    .skeleton-card { height: 88px; border-radius: 12px; }
+}
+
+/* Link ativo no menu */
+.nav-links a.ativo {
+    color: var(--primaria);
+}
+
+/* Rodapé */
+.rodape {
+    background: var(--texto-escuro);
+    color: #dfe6e9;
+    margin-top: 40px;
+    padding: 40px 5% 20px;
+}
+
+.rodape-conteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.rodape-marca h3 {
+    color: var(--branco);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.rodape-marca p {
+    font-size: 0.85rem;
+    color: #b2bec3;
+    max-width: 280px;
+}
+
+.rodape-links, .rodape-contato {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rodape-links a, .rodape-contato a {
+    color: #dfe6e9;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.rodape-links a:hover, .rodape-contato a:hover {
+    color: var(--secundaria);
+}
+
+.rodape-copy {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #7f8c8d;
+    padding-top: 18px;
+}
+
+@media (max-width: 480px) {
+    .rodape-conteudo {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .rodape-marca p {
+        max-width: none;
+    }
+}
+
 /* ==========================
    6. PÁGINA DE GESTÃO (ADMIN)
    ========================== */
 
 /* Header Admin Simplificado */
 .header-admin {
-    background-color: var(--branco);
+    background-color: var(--primaria);
     padding: 25px 5%;
     text-align: center;
     box-shadow: var(--sombra);
-    border-bottom: 3px solid var(--primaria);
     margin-bottom: 40px;
+    position: relative;
 }
 
 .header-admin h1 {
-    color: var(--texto-escuro);
+    color: var(--branco);
     font-size: 1.8rem;
+}
+
+.link-voltar {
+    position: absolute;
+    top: 22px;
+    left: 5%;
+    color: var(--branco);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.link-voltar:hover { opacity: 1; text-decoration: underline; }
+
+@media (max-width: 600px) {
+    .link-voltar {
+        position: static;
+        display: inline-block;
+        margin-bottom: 12px;
+    }
 }
 
 /* Container e Cards */
@@ -604,6 +753,17 @@ header {
 
 .btn-success:hover { background: #01a3a4; }
 
+.btn-danger {
+    background: #e53935;
+}
+
+.btn-danger:hover { background: #c62828; }
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -647,9 +807,9 @@ tbody tr:hover {
 .hidden { display: none !important; }
 .mt-1 { margin-top: 15px; }
 
-.abas { display: flex; gap: 10px; margin-top: 1rem; }
-.tab-btn { background: transparent; color: #a3cfbb; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; }
-.tab-btn:hover { color: white; }
-.tab-btn.ativo { color: white; border-bottom: 3px solid white; }
+.abas { display: flex; justify-content: center; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
+.tab-btn { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: none; padding: 10px 20px; font-size: 15px; cursor: pointer; border-radius: 20px; font-weight: 600; transition: 0.2s; }
+.tab-btn:hover { background: rgba(255,255,255,0.25); color: white; }
+.tab-btn.ativo { color: var(--primaria); background: var(--branco); }
 .input-tabela { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
 .input-curto { max-width: 90px; }
