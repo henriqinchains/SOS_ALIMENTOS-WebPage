@@ -15,102 +15,66 @@ async function carregarProdutos() {
     }
 }
 
-function renderizarTabela() {
-    const corpo = document.getElementById('corpoTabela');
-    corpo.innerHTML = '';
-
-    listaDeProdutos.forEach(produto => {
-        const linha = `
+function renderizarTabelaPreview() {
+    const corpoPreview = document.getElementById('corpoPreview');
+    corpoPreview.innerHTML = '';
+    
+    dadosPlanilhaMemoria.forEach((p, index) => {
+        corpoPreview.insertAdjacentHTML('beforeend', `
             <tr>
-                <td>${produto.nomeProduto}</td>
-                <td>${produto.unidade}</td>
-                <td>R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</td>
+                <td><span style="background:#e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 12px; color:#333;">${p.produto_id}</span></td>
                 <td>
-                    <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.ativo ? '#d1e7dd' : '#f8d7da'}; color: ${produto.ativo ? '#0f5132' : '#842029'};">
-                        ${produto.ativo ? 'Ativo' : 'Inativo'}
-                    </span>
+                    <input type="text" value="${p.nomeProduto}" 
+                           onchange="atualizarItemPreview(${index}, 'nomeProduto', this.value)"
+                           class="input-tabela">
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-outline" onclick="prepararEdicao('${produto._id}')">Editar</button>
-                    <button class="btn btn-sm btn-danger" onclick="deletarProduto('${produto._id}')">Excluir</button>
+                    <input type="text" value="${p.unidade}" 
+                           onchange="atualizarItemPreview(${index}, 'unidade', this.value)"
+                           class="input-tabela input-curto">
+                </td>
+                <td>
+                    <input type="number" step="0.01" value="${p.valorProduto}" 
+                           onchange="atualizarItemPreview(${index}, 'valorProduto', this.value)"
+                           class="input-tabela input-curto">
+                </td>
+                <td>
+                    <!-- SELETOR ATIVO/INATIVO -->
+                    <select onchange="atualizarItemPreview(${index}, 'ativo', this.value)" class="input-tabela">
+                        <option value="true" ${p.ativo ? 'selected' : ''}>Sim</option>
+                        <option value="false" ${!p.ativo ? 'selected' : ''}>Não</option>
+                    </select>
+                </td>
+                <td>
+                    <!-- BOTÃO DE EXCLUIR DO PREVIEW -->
+                    <button class="btn btn-sm btn-danger" onclick="removerItemPreview(${index})">X</button>
                 </td>
             </tr>
-        `;
-        corpo.insertAdjacentHTML('beforeend', linha);
+        `);
     });
 }
 
-async function salvarProduto(event) {
-    event.preventDefault();
-
-    const id = document.getElementById('produtoId').value;
-    
-    // Monta o objeto (se for manual, assume como ativo por padrão)
-    const dadosFormulario = {
-        nomeProduto: document.getElementById('nomeProduto').value,
-        unidade: document.getElementById('unidade').value,
-        valorProduto: parseFloat(document.getElementById('valorProduto').value),
-        ativo: true 
-    };
-
-    try {
-        let resposta;
-        if (id) {
-            // Edição (PUT)
-            resposta = await fetch(`${render}/api/produtos/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosFormulario)
-            });
-        } else {
-            // Novo Produto (POST)
-            dadosFormulario.produto_id = Math.floor(Math.random() * 1000000);
-            resposta = await fetch(`${render}/api/produtos`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosFormulario)
-            });
-        }
-
-        if (resposta.ok) {
-            alert('Produto salvo com sucesso!');
-            fecharFormulario();
-            carregarProdutos(); // Recarrega a tabela
-        } else {
-            const erro = await resposta.json();
-            alert(`Erro: ${erro.erro || erro.error}`);
-        }
-    } catch (erro) {
-        alert('Falha na comunicação com o servidor.');
+function atualizarItemPreview(index, campo, valor) {
+    if (campo === 'valorProduto') {
+        dadosPlanilhaMemoria[index][campo] = parseFloat(valor) || 0;
+        dadosPlanilhaMemoria[index]['valoremPromocao'] = parseFloat(valor) || 0; 
+    } else if (campo === 'ativo') {
+        // Converte a palavra "true"/"false" do select para o Booleano real do JavaScript
+        dadosPlanilhaMemoria[index][campo] = (valor === 'true');
+    } else {
+        dadosPlanilhaMemoria[index][campo] = valor;
     }
 }
 
-function prepararEdicao(id) {
-    const produto = listaDeProdutos.find(p => p._id === id);
-    if (!produto) return;
-
-    // Abre o form e preenche
-    document.getElementById('formManual').classList.remove('hidden');
-    document.getElementById('produtoId').value = produto._id;
-    document.getElementById('nomeProduto').value = produto.nomeProduto;
-    document.getElementById('unidade').value = produto.unidade;
-    document.getElementById('valorProduto').value = produto.valorProduto;
-    document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function deletarProduto(id) {
-    if (!confirm('Tem certeza que deseja apagar este produto?')) return;
-
-    try {
-        const resposta = await fetch(`${render}/api/produtos/${id}`, { method: 'DELETE' });
-        if (resposta.ok) carregarProdutos();
-    } catch (erro) {
-        alert('Erro ao tentar excluir o produto.');
+// NOVA FUNÇÃO: Remove a linha da memória e redesenha a tabela
+function removerItemPreview(index) {
+    if (confirm("Remover este item da importação? Ele não será enviado para a vitrine.")) {
+        // Corta o item da nossa array de memória
+        dadosPlanilhaMemoria.splice(index, 1);
+        // Redesenha a tabela sem o item
+        renderizarTabelaPreview();
     }
 }
-
 
 // =========== 2. FLUXO DE IMPORTAÇÃO DE PLANILHA CSV ===========
 
