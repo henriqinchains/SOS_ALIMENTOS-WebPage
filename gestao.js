@@ -145,6 +145,71 @@ function atualizarItemPreview(index, campo, valor) {
     }
 }
 
+async function salvarProduto(event) {
+    event.preventDefault();
+
+    const id = document.getElementById('produtoId').value;
+    
+    // Monta o objeto com os dados do formulário
+    const dadosFormulario = {
+        nomeProduto: document.getElementById('nomeProduto').value,
+        unidade: document.getElementById('unidade').value,
+        valorProduto: parseFloat(document.getElementById('valorProduto').value),
+        // Pega o valor do select novo e converte para Booleano
+        ativo: document.getElementById('ativoManual').value === 'true'
+    };
+
+    try {
+        let resposta;
+        if (id) {
+            // Edição (PUT)
+            resposta = await fetch(`${render}/api/produtos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosFormulario)
+            });
+        } else {
+            // Novo Produto (POST)
+            dadosFormulario.produto_id = Math.floor(Math.random() * 1000000);
+            resposta = await fetch(`${render}/api/produtos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosFormulario)
+            });
+        }
+
+        if (resposta.ok) {
+            alert('Produto salvo com sucesso!');
+            fecharFormulario();
+            carregarProdutos(); // Recarrega a tabela
+        } else {
+            const erro = await resposta.json();
+            alert(`Erro: ${erro.erro || erro.error}`);
+        }
+    } catch (erro) {
+        alert('Falha na comunicação com o servidor.');
+    }
+}
+
+function prepararEdicao(id) {
+    const produto = listaDeProdutos.find(p => p._id === id);
+    if (!produto) return;
+
+    // Abre o form e preenche
+    document.getElementById('formManual').classList.remove('hidden');
+    document.getElementById('produtoId').value = produto._id;
+    document.getElementById('nomeProduto').value = produto.nomeProduto;
+    document.getElementById('unidade').value = produto.unidade;
+    document.getElementById('valorProduto').value = produto.valorProduto;
+    
+    // Puxa o status correto pro select
+    document.getElementById('ativoManual').value = produto.ativo ? 'true' : 'false';
+    
+    document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function confirmarImportacao() {
     if (dadosPlanilhaMemoria.length === 0) return;
 
@@ -192,6 +257,7 @@ function prepararNovoProduto() {
     document.getElementById('formProduto').reset();
     document.getElementById('produtoId').value = '';
     document.getElementById('tituloFormulario').innerText = 'Cadastrar Novo Produto';
+    document.getElementById('ativoManual').value = 'true';
 }
 
 function fecharFormulario() {
