@@ -30,6 +30,12 @@ function renderizarTabela() {
                 <td>${produto.unidade}</td>
                 <td>R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</td>
                 <td>
+                    <!-- NOVA COLUNA DE PROMOÇÃO -->
+                    <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.emPromocao ? '#fff3cd' : '#f8f9fa'}; color: ${produto.emPromocao ? '#856404' : '#6c757d'}; border: 1px solid ${produto.emPromocao ? '#ffeeba' : '#dee2e6'};">
+                        ${produto.emPromocao ? '🔥 Sim' : 'Não'}
+                    </span>
+                </td>
+                <td>
                     <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.ativo ? '#d1e7dd' : '#f8d7da'}; color: ${produto.ativo ? '#0f5132' : '#842029'};">
                         ${produto.ativo ? 'Ativo' : 'Inativo'}
                     </span>
@@ -141,7 +147,18 @@ async function preVisualizarCSV() {
         });
 
         if (resposta.ok) {
-            dadosPlanilhaMemoria = await resposta.json();
+            const dadosBrutos = await resposta.json();
+            
+            // ==========================================
+            // TRAVA DE SEGURANÇA CONTRA O ERP
+            // Aqui nós varremos a planilha e forçamos a promoção a ser FALSE
+            // ==========================================
+            dadosPlanilhaMemoria = dadosBrutos.map(p => {
+                p.emPromocao = false;
+                p.valoremPromocao = p.valorProduto; // Preço promo fica igual ao normal pra garantir
+                return p;
+            });
+
             renderizarTabelaPreview();
             document.getElementById('areaPreview').classList.remove('hidden');
         } else {
