@@ -131,10 +131,6 @@ function renderizarProdutos(lista, container, apenasPromocao) {
     });
 }
 
-// Busca os produtos na API e renderiza nas duas abas (Produtos e Promoções)
-// O servidor gratuito do Render "dorme" após um tempo sem uso, então a
-// primeira chamada pode falhar ou demorar — por isso tentamos acordá-lo
-// e refazemos a busca algumas vezes antes de desistir.
 async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
     for (let i = 0; i < tentativas; i++) {
         try {
@@ -182,17 +178,26 @@ async function carregarProdutos() {
     };
 
     try {
+        let dadosBrutos = [];
         try {
-            // Primeira tentativa direta (caso o servidor já esteja acordado)
-            todosProdutos = await tentarBuscar();
+            // Primeira tentativa direta 
+            dadosBrutos = await tentarBuscar();
         } catch (primeiroErro) {
             // Se falhar, tenta acordar o servidor e busca de novo
             await esperarServidorAcordar();
-            todosProdutos = await tentarBuscar();
+            dadosBrutos = await tentarBuscar();
         }
 
+        // ==========================================
+        // O SEGREDO ESTÁ AQUI: FILTRO DE ESTOQUE
+        // ==========================================
+        // Ele varre a lista que chegou do banco e salva APENAS os ativos (true)
+        todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
+
+        // Agora desenha os produtos ativos na tela
         renderizarProdutos(todosProdutos, gridProdutos, false);
 
+        // Filtra os ativos para ver quais estão em promoção
         const emPromocao = todosProdutos.filter(produto => produto.emPromocao);
         renderizarProdutos(emPromocao, gridPromocoes, true);
 
