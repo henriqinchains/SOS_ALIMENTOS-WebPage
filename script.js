@@ -117,6 +117,68 @@ function criarCardProduto(produto) {
     return card;
 }
 
+// 1. Calcula o percentual e pega os N produtos com maior desconto
+function calcularMaioresDescontos(produtos, limite = 3) {
+    // Filtra só quem é promoção de verdade
+    const promocoes = produtos.filter(p => p.emPromocao && p.valoremPromocao < p.valorProduto);
+    
+    // Calcula a porcentagem e salva temporariamente
+    const comDesconto = promocoes.map(p => {
+        const percentual = ((p.valorProduto - p.valoremPromocao) / p.valorProduto) * 100;
+        return { ...p, percentualDesconto: percentual };
+    });
+
+    // Ordena do maior desconto (ex: 50%) para o menor (ex: 5%)
+    comDesconto.sort((a, b) => b.percentualDesconto - a.percentualDesconto);
+
+    // Retorna o Top 3 (ou o número que você quiser)
+    return comDesconto.slice(0, limite);
+}
+
+// 2. Constrói o HTML dos Banners e injeta na tela
+function renderizarCarrosselDinâmico(produtosDestaque) {
+    const containerSlides = document.querySelector('.slides-container');
+    const containerDots = document.querySelector('.carrossel-dots');
+    
+    if (!containerSlides || !containerDots || produtosDestaque.length === 0) return;
+
+    containerSlides.innerHTML = '';
+    containerDots.innerHTML = '';
+
+    produtosDestaque.forEach((produto, index) => {
+        const ativoClass = index === 0 ? 'ativo' : '';
+        const imgPlaceholder = produto.img ? `<img src="${produto.img}" alt="${produto.nomeProduto}">` : '<div class="banner-no-img">📸 Imagem Indisponível</div>';
+        
+        // HTML do Banner Horizontal
+        const slideHTML = `
+            <div class="slide ${ativoClass}">
+                <div class="banner-content">
+                    <div class="banner-img-wrapper">
+                        ${imgPlaceholder}
+                        <div class="badge-desconto">-${Math.round(produto.percentualDesconto)}%</div>
+                    </div>
+                    <div class="banner-info">
+                        <span class="banner-tag">OFERTA IMPERDÍVEL</span>
+                        <h2>${produto.nomeProduto}</h2>
+                        <div class="banner-precos">
+                            <span class="banner-preco-antigo">${formatarPreco(produto.valorProduto)}</span>
+                            <span class="banner-preco-novo">${formatarPreco(produto.valoremPromocao)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        containerSlides.insertAdjacentHTML('beforeend', slideHTML);
+
+        // HTML das Bolinhas (Dots)
+        const dotHTML = `<span class="dot ${ativoClass}" onclick="irParaSlide(${index})"></span>`;
+        containerDots.insertAdjacentHTML('beforeend', dotHTML);
+    });
+    
+    // Reseta a lógica de animação
+    slideIndex = 0;
+}
+
 // Renderiza uma lista de produtos dentro de um container
 function renderizarProdutos(lista, container, apenasPromocao) {
     if (!container) return;
