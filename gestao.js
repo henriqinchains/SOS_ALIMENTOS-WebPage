@@ -54,7 +54,9 @@ async function salvarProduto(event) {
         nomeProduto: document.getElementById('nomeProduto').value,
         unidade: document.getElementById('unidade').value,
         valorProduto: parseFloat(document.getElementById('valorProduto').value),
-        ativo: document.getElementById('ativoManual').value === 'true'
+        ativo: document.getElementById('ativoManual').value === 'true',
+        emPromocao: document.getElementById('emPromocaoManual').value === 'true',
+        valoremPromocao: parseFloat(document.getElementById('valoremPromocao').value) || parseFloat(document.getElementById('valorProduto').value)
     };
 
     try {
