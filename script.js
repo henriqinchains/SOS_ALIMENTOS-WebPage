@@ -245,25 +245,20 @@ async function carregarProdutos() {
     try {
         let dadosBrutos = [];
         try {
-            // Primeira tentativa direta 
             dadosBrutos = await tentarBuscar();
         } catch (primeiroErro) {
-            // Se falhar, tenta acordar o servidor e busca de novo
             await esperarServidorAcordar();
             dadosBrutos = await tentarBuscar();
         }
 
-        // ==========================================
-        // O SEGREDO ESTÁ AQUI: FILTRO DE ESTOQUE
-        // ==========================================
-        // Ele varre a lista que chegou do banco e salva APENAS os ativos (true)
         todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
 
-        // Agora desenha os produtos ativos na tela
-        renderizarProdutos(todosProdutos, gridProdutos, false);
+        const maioresDescontos = calcularMaioresDescontos(todosProdutos, 3); // Pega o Top 3
+        renderizarCarrosselDinâmico(maioresDescontos); // Desenha os banners
 
-        // Filtra os ativos para ver quais estão em promoção
-        const emPromocao = todosProdutos.filter(produto => produto.emPromocao);
+        // Desenha os grids
+        renderizarProdutos(todosProdutos, gridProdutos, false);
+        const emPromocao = todosProdutos.filter(produto => produto.emPromocao && produto.valoremPromocao < produto.valorProduto);
         renderizarProdutos(emPromocao, gridPromocoes, true);
 
     } catch (erro) {
