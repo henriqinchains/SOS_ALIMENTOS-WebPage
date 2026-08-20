@@ -100,6 +100,8 @@ function prepararEdicao(id) {
     document.getElementById('unidade').value = produto.unidade;
     document.getElementById('valorProduto').value = produto.valorProduto;
     document.getElementById('ativoManual').value = produto.ativo ? 'true' : 'false';
+    document.getElementById('emPromocaoManual').value = produto.emPromocao ? 'true' : 'false';
+    document.getElementById('valoremPromocao').value = produto.valoremPromocao
     
     document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
     window.scrollTo({ top: 0, behavior: 'smooth' });
