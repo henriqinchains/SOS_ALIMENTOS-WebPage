@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOS ALIMENTOS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -52,6 +55,11 @@
                 </div>
                 <button class="botao-ant" onclick="mudarSlide(-1)">&#10094;</button>
                 <button class="botao-prox" onclick="mudarSlide(1)">&#10095;</button>
+                <div class="carrossel-dots">
+                    <span class="dot ativo" onclick="irParaSlide(0)"></span>
+                    <span class="dot" onclick="irParaSlide(1)"></span>
+                    <span class="dot" onclick="irParaSlide(2)"></span>
+                </div>
             </div>
 
             <!-- Caixa de Pesquisa -->
@@ -66,7 +74,9 @@
 
             <!-- Grid de Produtos em Promoção -->
             <div class="grid-produtos" id="grid-promocoes">
-                <p class="msg-estado">Carregando promoções...</p>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
         </section>
 
@@ -84,18 +94,34 @@
 
             <!-- Grid de Produtos -->
             <div class="grid-produtos" id="grid-produtos">
-                <p class="msg-estado">Carregando produtos...</p>
-            </div>
-        </section>
-
-        <!-- PÁGINA 3: GESTÃO -->
-        <section id="gestao" class="page">
-            <div class="titulo-pagina">
-                <h2>Área de Gestão</h2>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
         </section>
 
     </main>
+
+    <!-- Rodapé -->
+    <footer class="rodape">
+        <div class="rodape-conteudo">
+            <div class="rodape-marca">
+                <h3>SOS ALIMENTOS</h3>
+                <p>Os melhores preços em alimentos, direto para sua casa.</p>
+            </div>
+            <div class="rodape-links">
+                <a href="#ofertas">Ofertas da semana</a>
+                <a href="#produtos">Produtos</a>
+                <a href="gestao.html">Gestão</a>
+            </div>
+            <div class="rodape-contato">
+                <a href="#">WhatsApp</a>
+                <a href="#">Instagram</a>
+            </div>
+        </div>
+        <p class="rodape-copy">&copy; <span id="ano-atual"></span> SOS Alimentos. Todos os direitos reservados.</p>
+    </footer>
 
     <script src="script.js"></script>
 
