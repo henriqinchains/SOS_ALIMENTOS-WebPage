@@ -223,12 +223,14 @@ async function confirmarImportacao() {
             
             mudarAba('vitrine');
             carregarProdutos();
+        } else {
+            const erroBackend = await resposta.json();
+            alert(`O Servidor recusou a importação. Motivo: ${erroBackend.error || 'Erro desconhecido'}`);
         }
     } catch (erro) {
-        alert("Erro ao confirmar a sincronização.");
+        alert("Erro grave de conexão ao tentar enviar os dados.");
     }
 }
-
 
 // ==========================================
 // 3. CONTROLE DE INTERFACE (ABAS E FORMS)
