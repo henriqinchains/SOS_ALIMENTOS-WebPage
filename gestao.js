@@ -1,3 +1,4 @@
+const render = "https://sos-alimentos-webpage-servidor.onrender.com";
 let listaDeProdutos = [];
 let dadosPlanilhaMemoria = []; // Guarda o JSON do CSV temporariamente
 
@@ -5,7 +6,7 @@ let dadosPlanilhaMemoria = []; // Guarda o JSON do CSV temporariamente
 
 async function carregarProdutos() {
     try {
-        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/produtos');
+        const resposta = await fetch(`${render}/api/produtos`);
         listaDeProdutos = await resposta.json();
         renderizarTabela();
     } catch (erro) {
@@ -25,7 +26,7 @@ function renderizarTabela() {
                 <td>${produto.unidade}</td>
                 <td>R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</td>
                 <td>
-                    <span class="status-badge ${produto.ativo ? 'status-on' : 'status-off'}">
+                    <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.ativo ? '#d1e7dd' : '#f8d7da'}; color: ${produto.ativo ? '#0f5132' : '#842029'};">
                         ${produto.ativo ? 'Ativo' : 'Inativo'}
                     </span>
                 </td>
@@ -40,30 +41,31 @@ function renderizarTabela() {
 }
 
 async function salvarProduto(event) {
-    event.preventDefault(); // Impede a página de recarregar
+    event.preventDefault();
 
     const id = document.getElementById('produtoId').value;
     
-    // Monta o objeto com os dados do formulário
+    // Monta o objeto (se for manual, assume como ativo por padrão)
     const dadosFormulario = {
         nomeProduto: document.getElementById('nomeProduto').value,
         unidade: document.getElementById('unidade').value,
         valorProduto: parseFloat(document.getElementById('valorProduto').value),
-        ativo: document.getElementById('ativo').checked
+        ativo: true 
     };
 
     try {
         let resposta;
         if (id) {
-            // Se tem ID, é Edição (PUT)
-            resposta = await fetch(`'https://sos-alimentos-webpage-servidor.onrender.com/api/produtos'/${id}`, {
+            // Edição (PUT)
+            resposta = await fetch(`${render}/api/produtos/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosFormulario)
             });
         } else {
-            // Se não tem ID, é Criação (POST manual)
-            resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/produtos', {
+            // Novo Produto (POST)
+            dadosFormulario.produto_id = Math.floor(Math.random() * 1000000);
+            resposta = await fetch(`${render}/api/produtos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosFormulario)
@@ -72,52 +74,43 @@ async function salvarProduto(event) {
 
         if (resposta.ok) {
             alert('Produto salvo com sucesso!');
-            limparFormulario();
+            fecharFormulario();
             carregarProdutos(); // Recarrega a tabela
         } else {
             const erro = await resposta.json();
-            alert(`Erro: ${erro.error}`);
+            alert(`Erro: ${erro.erro || erro.error}`);
         }
     } catch (erro) {
-        console.error(erro);
         alert('Falha na comunicação com o servidor.');
     }
 }
 
 function prepararEdicao(id) {
-    // Acha o produto na lista que já está carregada na memória
     const produto = listaDeProdutos.find(p => p._id === id);
     if (!produto) return;
 
-    // Preenche o formulário
+    // Abre o form e preenche
+    document.getElementById('formManual').classList.remove('hidden');
     document.getElementById('produtoId').value = produto._id;
     document.getElementById('nomeProduto').value = produto.nomeProduto;
     document.getElementById('unidade').value = produto.unidade;
     document.getElementById('valorProduto').value = produto.valorProduto;
-    document.getElementById('ativo').checked = produto.ativo;
-
-    document.getElementById('tituloFormulario').innerText = 'Editando Produto';
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Rola a tela pra cima
+    document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function deletarProduto(id) {
-    if (!confirm('Tem certeza que deseja apagar este produto? Essa ação não pode ser desfeita.')) return;
+    if (!confirm('Tem certeza que deseja apagar este produto?')) return;
 
     try {
-        const resposta = await fetch(`'https://sos-alimentos-webpage-servidor.onrender.com/api/produtos'/${id}`, { method: 'DELETE' });
-        if (resposta.ok) {
-            carregarProdutos(); // Atualiza a tabela tirando o item
-        }
+        const resposta = await fetch(`${render}/api/produtos/${id}`, { method: 'DELETE' });
+        if (resposta.ok) carregarProdutos();
     } catch (erro) {
         alert('Erro ao tentar excluir o produto.');
     }
 }
 
-function limparFormulario() {
-    document.getElementById('formProduto').reset();
-    document.getElementById('produtoId').value = '';
-    document.getElementById('tituloFormulario').innerText = 'Cadastrar Novo Produto';
-}
 
 // =========== 2. FLUXO DE IMPORTAÇÃO DE PLANILHA CSV ===========
 
@@ -132,37 +125,59 @@ async function preVisualizarCSV() {
     formData.append('arquivoPlanilha', inputArquivo.files[0]);
 
     try {
-        // Envia para a nossa rota de Preview
-        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/registros/preview-csv', {
+        const resposta = await fetch(`${render}/api/produtos/preview-csv`, {
             method: 'POST',
             body: formData
         });
 
         if (resposta.ok) {
             dadosPlanilhaMemoria = await resposta.json();
-            
-            // Preenche a tabela de visualização
-            const corpoPreview = document.getElementById('corpoPreview');
-            corpoPreview.innerHTML = '';
-            
-            dadosPlanilhaMemoria.forEach(p => {
-                corpoPreview.insertAdjacentHTML('beforeend', `
-                    <tr>
-                        <td>${p.nomeProduto}</td>
-                        <td>${p.unidade}</td>
-                        <td>R$ ${p.valorProduto.toFixed(2)}</td>
-                        <td>${p.ativo ? 'Sim' : 'Não'}</td>
-                    </tr>
-                `);
-            });
-
-            // Mostra o bloco de revisão na tela
+            renderizarTabelaPreview();
             document.getElementById('areaPreview').classList.remove('hidden');
         } else {
-            alert("Erro ao ler a planilha no servidor.");
+            alert("Erro ao processar a planilha no servidor.");
         }
     } catch (erro) {
-        alert("Falha na comunicação ao enviar planilha.");
+        alert("Falha de comunicação com o servidor.");
+    }
+}
+
+// A Mágica da Tabela Editável
+function renderizarTabelaPreview() {
+    const corpoPreview = document.getElementById('corpoPreview');
+    corpoPreview.innerHTML = '';
+    
+    dadosPlanilhaMemoria.forEach((p, index) => {
+        corpoPreview.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td><span style="background:#e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 12px; color:#333;">${p.produto_id}</span></td>
+                <td>
+                    <input type="text" value="${p.nomeProduto}" 
+                           onchange="atualizarItemPreview(${index}, 'nomeProduto', this.value)"
+                           class="input-tabela">
+                </td>
+                <td>
+                    <input type="text" value="${p.unidade}" 
+                           onchange="atualizarItemPreview(${index}, 'unidade', this.value)"
+                           class="input-tabela input-curto">
+                </td>
+                <td>
+                    <input type="number" step="0.01" value="${p.valorProduto}" 
+                           onchange="atualizarItemPreview(${index}, 'valorProduto', this.value)"
+                           class="input-tabela input-curto">
+                </td>
+                <td>${p.ativo ? 'Sim' : 'Não'}</td>
+            </tr>
+        `);
+    });
+}
+
+function atualizarItemPreview(index, campo, valor) {
+    if (campo === 'valorProduto') {
+        dadosPlanilhaMemoria[index][campo] = parseFloat(valor) || 0;
+        dadosPlanilhaMemoria[index]['valoremPromocao'] = parseFloat(valor) || 0; 
+    } else {
+        dadosPlanilhaMemoria[index][campo] = valor;
     }
 }
 
@@ -170,8 +185,7 @@ async function confirmarImportacao() {
     if (dadosPlanilhaMemoria.length === 0) return;
 
     try {
-        // Envia o JSON finalizado para o Bulk Insert (salvamento em massa)
-        const resposta = await fetch('https://sos-alimentos-webpage-servidor.onrender.com/api/registros/importar', {
+        const resposta = await fetch(`${render}/api/produtos/importar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosPlanilhaMemoria)
@@ -179,37 +193,36 @@ async function confirmarImportacao() {
 
         if (resposta.ok) {
             const resultado = await resposta.json();
-            alert(`Sucesso! ${resultado.inseridos} criados, ${resultado.atualizados} atualizados.`);
+            alert(`Sincronização Concluída! ${resultado.inseridos} novos produtos e ${resultado.atualizados} atualizados.`);
             
-            // Limpa a tela
+            // Limpa a tela de importação
             document.getElementById('areaPreview').classList.add('hidden');
             document.getElementById('arquivoCsv').value = '';
             dadosPlanilhaMemoria = [];
             
-            // Recarrega a tabela principal com os dados novos do banco
+            // Volta para a aba vitrine automaticamente e recarrega os dados
+            mudarAba('vitrine');
             carregarProdutos();
         }
     } catch (erro) {
-        alert("Erro ao confirmar a importação.");
+        alert("Erro ao confirmar a sincronização.");
     }
 }
 
-// Inicialização: carrega os produtos assim que a página abrir
+
+// =========== 3. CONTROLE DE INTERFACE (ABAS E FORMS) ===========
+
+// A CHAVE NA IGNIÇÃO: Busca os produtos assim que a página abre
 document.addEventListener('DOMContentLoaded', carregarProdutos);
 
-// Troca entre as abas do sistema
 function mudarAba(abaId) {
-    // Esconde tudo
     document.querySelectorAll('.aba-conteudo').forEach(aba => aba.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
     
-    // Mostra só a que clicou
     document.getElementById(`aba-${abaId}`).classList.remove('hidden');
-    // Descobre quem disparou o evento (o botão) e adiciona a classe ativo
     event.currentTarget.classList.add('ativo');
 }
 
-// Funções para abrir e fechar o formulário manual da vitrine
 function prepararNovoProduto() {
     document.getElementById('formManual').classList.remove('hidden');
     document.getElementById('formProduto').reset();
