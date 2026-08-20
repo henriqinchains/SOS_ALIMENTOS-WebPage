@@ -96,13 +96,16 @@ function criarCardProduto(produto) {
     const card = document.createElement('div');
     card.className = 'produto-card';
 
-    const precoHtml = produto.emPromocao
+    // A MÁGICA AQUI: O sistema só considera promoção se o preço promocional for menor que o original!
+    const ehPromocaoDeVerdade = produto.emPromocao && (produto.valoremPromocao < produto.valorProduto);
+
+    const precoHtml = ehPromocaoDeVerdade
         ? `<p class="preco-antigo">${formatarPreco(produto.valorProduto)}</p>
            <p class="preco preco-promo">${formatarPreco(produto.valoremPromocao)}</p>`
         : `<p class="preco">${formatarPreco(produto.valorProduto)}</p>`;
 
     card.innerHTML = `
-        ${produto.emPromocao ? '<span class="selo-promocao">Promoção</span>' : ''}
+        ${ehPromocaoDeVerdade ? '<span class="selo-promocao">Promoção</span>' : ''}
         <div class="img-placeholder">
             ${produto.img ? `<img src="${produto.img}" alt="${produto.nomeProduto}">` : 'Foto'}
         </div>
