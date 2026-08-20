@@ -219,3 +219,113 @@ window.addEventListener('load', () => {
         configurarBusca('search-input-ofertas', 'grid-promocoes', true);
     });
 });
+// Busca os produtos na API e renderiza nas duas abas (Produtos e Promoções)
+// O servidor gratuito do Render "dorme" após um tempo sem uso, então a
+// primeira chamada pode falhar ou demorar — por isso tentamos acordá-lo
+// e refazemos a busca algumas vezes antes de desistir.
+async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const resposta = await fetch(`${API_URL}/health`);
+            if (resposta.ok) return true;
+        } catch (erro) {
+            // servidor ainda dormindo, tenta de novo depois do intervalo
+        }
+        await new Promise(resolve => setTimeout(resolve, intervaloMs));
+    }
+    return false;
+}
+
+function mostrarEstadoCarregando(container, mensagem) {
+    if (container) container.innerHTML = `<p class="msg-estado">${mensagem}</p>`;
+}
+
+function mostrarEstadoErro() {
+    const mensagemErro = `
+        <p class="msg-estado">
+            Não foi possível carregar os produtos.<br>
+            <button class="btn-tentar-novamente" onclick="carregarProdutos()">Tentar novamente</button>
+        </p>
+    `;
+    const gridProdutos = document.getElementById('grid-produtos');
+    const gridPromocoes = document.getElementById('grid-promocoes');
+    if (gridProdutos) gridProdutos.innerHTML = mensagemErro;
+    if (gridPromocoes) gridPromocoes.innerHTML = mensagemErro;
+}
+
+async function carregarProdutos() {
+    const gridProdutos = document.getElementById('grid-produtos');
+    const gridPromocoes = document.getElementById('grid-promocoes');
+
+    mostrarEstadoCarregando(gridProdutos, 'Carregando produtos...');
+    mostrarEstadoCarregando(gridPromocoes, 'Carregando promoções...');
+
+    const tentarBuscar = async () => {
+        const resposta = await fetch(`${API_URL}/api/produtos`);
+        if (!resposta.ok) throw new Error('Falha ao buscar produtos.');
+        return resposta.json();
+    };
+
+    try {
+        try {
+            // Primeira tentativa direta (caso o servidor já esteja acordado)
+            todosProdutos = await tentarBuscar();
+        } catch (primeiroErro) {
+            // Se falhar, avisa que o servidor pode estar acordando e tenta de novo
+            mostrarEstadoCarregando(gridProdutos, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
+            mostrarEstadoCarregando(gridPromocoes, 'O servidor pode estar acordando, isso pode levar até 1 minuto...');
+
+            await esperarServidorAcordar();
+            todosProdutos = await tentarBuscar();
+        }
+
+        renderizarProdutos(todosProdutos, gridProdutos, false);
+
+        const emPromocao = todosProdutos.filter(produto => produto.emPromocao);
+        renderizarProdutos(emPromocao, gridPromocoes, true);
+
+    } catch (erro) {
+        console.error('Erro ao carregar produtos:', erro);
+        mostrarEstadoErro();
+    }
+}
+
+// Filtra os produtos já carregados pelo termo digitado
+function filtrarProdutos(termo, apenasPromocao) {
+    const base = apenasPromocao ? todosProdutos.filter(produto => produto.emPromocao) : todosProdutos;
+    const termoBusca = termo.trim().toLowerCase();
+
+    if (!termoBusca) return base;
+
+    return base.filter(produto => produto.nomeProduto.toLowerCase().includes(termoBusca));
+}
+
+// Liga o input + botão de busca de uma seção ao grid de resultados correspondente
+function configurarBusca(inputId, containerId, apenasPromocao) {
+    const input = document.getElementById(inputId);
+    const container = document.getElementById(containerId);
+
+    if (!input || !container) return;
+
+    const executarBusca = () => {
+        const resultado = filtrarProdutos(input.value, apenasPromocao);
+        renderizarProdutos(resultado, container, apenasPromocao);
+    };
+
+    input.addEventListener('input', executarBusca);
+    input.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Enter') executarBusca();
+    });
+
+    const containerPesquisa = input.closest('.pesquisa-container');
+    const botaoBuscar = containerPesquisa ? containerPesquisa.querySelector('.btn-pesquisar') : null;
+    if (botaoBuscar) botaoBuscar.addEventListener('click', executarBusca);
+}
+
+// Carrega os produtos assim que a página abre e conecta as duas barras de pesquisa
+window.addEventListener('load', () => {
+    carregarProdutos().then(() => {
+        configurarBusca('search-input-produtos', 'grid-produtos', false);
+        configurarBusca('search-input-ofertas', 'grid-promocoes', true);
+    });
+});
