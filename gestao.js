@@ -111,6 +111,18 @@ function prepararEdicao(id) {
     
     document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const urlFoto = produto.img || '';
+    document.getElementById('imgProduto').value = urlFoto; 
+    
+    if(urlFoto) {
+        document.getElementById('thumbPreview').src = urlFoto;
+        document.getElementById('thumbPreview').style.display = 'block';
+        document.getElementById('thumbTexto').style.display = 'none';
+    } else {
+        document.getElementById('thumbPreview').style.display = 'none';
+        document.getElementById('thumbTexto').style.display = 'block';
+    }
 }
 
 // Deleta um produto da vitrine
@@ -273,6 +285,9 @@ function prepararNovoProduto() {
     document.getElementById('produtoId').value = '';
     document.getElementById('ativoManual').value = 'true';
     document.getElementById('tituloFormulario').innerText = 'Cadastrar Novo Produto';
+    document.getElementById('imgProduto').value = ''; 
+    document.getElementById('thumbPreview').style.display = 'none';
+    document.getElementById('thumbTexto').style.display = 'block';
 }
 
 function fecharFormulario() {
