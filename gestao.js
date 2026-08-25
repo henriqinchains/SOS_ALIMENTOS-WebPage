@@ -11,7 +11,7 @@ async function carregarProdutos() {
     try {
         const resposta = await fetch(`${render}/api/produtos`);
         listaDeProdutos = await resposta.json();
-        renderizarTabela(); // Chama a tabela oficial, não a de preview
+        renderizarTabela(); 
     } catch (erro) {
         console.error('Erro ao carregar produtos:', erro);
         alert('Erro ao carregar a lista de produtos do servidor.');
@@ -25,16 +25,15 @@ function renderizarTabela() {
 
     listaDeProdutos.forEach(produto => {
         
-        // Define o quadradinho da foto
+        // Define o quadradinho da foto com Lazy Loading para otimização
         const urlFoto = produto.img ? produto.img : '';
         const imgHtml = urlFoto 
-            ? `<img src="${urlFoto}">` 
+            ? `<img src="${urlFoto}" loading="lazy" alt="Foto">` 
             : `<span>📷</span>`;
 
         const linha = `
             <tr>
                 <td>
-                    <!-- O QUADRADINHO CLICÁVEL DIRETO NA TABELA -->
                     <div class="thumb-tabela" onclick="abrirModalImagem('${produto._id}')" title="Alterar Foto">
                         ${imgHtml}
                     </div>
@@ -119,22 +118,12 @@ function prepararEdicao(id) {
     document.getElementById('valorProduto').value = produto.valorProduto;
     document.getElementById('ativoManual').value = produto.ativo ? 'true' : 'false';
     document.getElementById('emPromocaoManual').value = produto.emPromocao ? 'true' : 'false';
-    document.getElementById('valoremPromocao').value = produto.valoremPromocao
+    document.getElementById('valoremPromocao').value = produto.valoremPromocao;
     
     document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const urlFoto = produto.img || '';
-    document.getElementById('imgProduto').value = urlFoto; 
     
-    if(urlFoto) {
-        document.getElementById('thumbPreview').src = urlFoto;
-        document.getElementById('thumbPreview').style.display = 'block';
-        document.getElementById('thumbTexto').style.display = 'none';
-    } else {
-        document.getElementById('thumbPreview').style.display = 'none';
-        document.getElementById('thumbTexto').style.display = 'block';
-    }
+    // NOTA: Limpamos o código da foto que dava erro aqui!
 }
 
 // Deleta um produto da vitrine
@@ -173,13 +162,9 @@ async function preVisualizarCSV() {
         if (resposta.ok) {
             const dadosBrutos = await resposta.json();
             
-            // ==========================================
-            // TRAVA DE SEGURANÇA CONTRA O ERP
-            // Aqui nós varremos a planilha e forçamos a promoção a ser FALSE
-            // ==========================================
             dadosPlanilhaMemoria = dadosBrutos.map(p => {
                 p.emPromocao = false;
-                p.valoremPromocao = p.valorProduto; // Preço promo fica igual ao normal pra garantir
+                p.valoremPromocao = p.valorProduto; 
                 return p;
             });
 
@@ -297,9 +282,7 @@ function prepararNovoProduto() {
     document.getElementById('produtoId').value = '';
     document.getElementById('ativoManual').value = 'true';
     document.getElementById('tituloFormulario').innerText = 'Cadastrar Novo Produto';
-    document.getElementById('imgProduto').value = ''; 
-    document.getElementById('thumbPreview').style.display = 'none';
-    document.getElementById('thumbTexto').style.display = 'block';
+    // NOTA: Limpamos o código da foto que dava erro aqui também!
 }
 
 function fecharFormulario() {
@@ -311,11 +294,9 @@ function fecharFormulario() {
 // ==========================================
 
 function abrirModalImagem(idProduto) {
-    // Acha quem é o produto que foi clicado
     const produto = listaDeProdutos.find(p => p._id === idProduto);
     if (!produto) return;
 
-    // Guarda o ID no modal e preenche a URL se já tiver
     document.getElementById('modalProdutoId').value = produto._id;
     document.getElementById('inputUrlImagem').value = produto.img || '';
     
@@ -342,25 +323,32 @@ function atualizarPreviewModal() {
     }
 }
 
-// Agora essa função fala direto com a API!
 async function confirmarImagem() {
     const id = document.getElementById('modalProdutoId').value;
     const novaUrl = document.getElementById('inputUrlImagem').value;
     
-    // Pega todos os dados do produto e atualiza SÓ a imagem
-    const produto = listaDeProdutos.find(p => p._id === id);
-    const produtoAtualizado = { ...produto, img: novaUrl };
+    // Acha o produto na memória
+    const produtoIndex = listaDeProdutos.findIndex(p => p._id === id);
+    if (produtoIndex === -1) return;
+
+    const produtoOriginal = listaDeProdutos[produtoIndex];
+
+    // O SEGREDO ESTÁ AQUI: Removemos o _id do pacote para o MongoDB não bloquear a edição!
+    const { _id, ...dadosParaSalvar } = produtoOriginal;
+    dadosParaSalvar.img = novaUrl;
     
     try {
         const resposta = await fetch(`${render}/api/produtos/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(produtoAtualizado)
+            body: JSON.stringify(dadosParaSalvar)
         });
 
         if (resposta.ok) {
+            // Atualiza a memória e redesenha (Otimizado, não puxa tudo do banco de novo)
+            listaDeProdutos[produtoIndex].img = novaUrl;
             fecharModalImagem();
-            carregarProdutos(); // Recarrega a tabela inteira e a foto já brota na tela!
+            renderizarTabela(); 
         } else {
             alert('Erro ao salvar a imagem no banco de dados.');
         }
@@ -371,5 +359,5 @@ async function confirmarImagem() {
 
 function removerImagem() {
     document.getElementById('inputUrlImagem').value = '';
-    confirmarImagem(); // Já salva vazio no banco
+    confirmarImagem(); 
 }
