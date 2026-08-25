@@ -24,13 +24,25 @@ function renderizarTabela() {
     corpo.innerHTML = '';
 
     listaDeProdutos.forEach(produto => {
+        
+        // Define o quadradinho da foto
+        const urlFoto = produto.img ? produto.img : '';
+        const imgHtml = urlFoto 
+            ? `<img src="${urlFoto}">` 
+            : `<span>📷</span>`;
+
         const linha = `
             <tr>
+                <td>
+                    <!-- O QUADRADINHO CLICÁVEL DIRETO NA TABELA -->
+                    <div class="thumb-tabela" onclick="abrirModalImagem('${produto._id}')" title="Alterar Foto">
+                        ${imgHtml}
+                    </div>
+                </td>
                 <td>${produto.nomeProduto}</td>
                 <td>${produto.unidade}</td>
                 <td>R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</td>
                 <td>
-                    <!-- NOVA COLUNA DE PROMOÇÃO -->
                     <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.emPromocao ? '#fff3cd' : '#f8f9fa'}; color: ${produto.emPromocao ? '#856404' : '#6c757d'}; border: 1px solid ${produto.emPromocao ? '#ffeeba' : '#dee2e6'};">
                         ${produto.emPromocao ? '🔥 Sim' : 'Não'}
                     </span>
