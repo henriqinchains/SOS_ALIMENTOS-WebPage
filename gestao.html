@@ -39,14 +39,6 @@
                     <input type="hidden" id="produtoId">
                     <div class="form-grid">
                         <div class="input-group">
-                            <label>Imagem do Produto</label>
-                            
-                            <!-- Quadrado clicável -->
-                            <div class="quadrado-imagem" onclick="abrirModalImagem()">
-                                <img id="thumbPreview" src="" alt="Preview" style="display: none;">
-                                <span id="thumbTexto">📷 Adicionar Foto</span>
-                            </div>
-                            
                             <!-- Input invisível que guarda o link para salvar no banco -->
                             <input type="hidden" id="imgProduto">
                         </div>
@@ -93,6 +85,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Imagem</th>
                             <th>Nome</th>
                             <th>Unid.</th>
                             <th>Valor</th>
