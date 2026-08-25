@@ -347,7 +347,7 @@ async function confirmarImagem() {
         renderizarTabela();
         }
     } catch (erro) {
-        console.log(`O SERVIDOR NEM RESPONDEU! Erro: ${erro.message}`);
+        console.log(`Erro: ${erro.message}`);
     }
 }
 
