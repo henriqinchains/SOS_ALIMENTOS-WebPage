@@ -327,14 +327,13 @@ async function confirmarImagem() {
     const id = document.getElementById('modalProdutoId').value;
     const novaUrl = document.getElementById('inputUrlImagem').value;
     
-    // Acha o produto na memória
     const produtoIndex = listaDeProdutos.findIndex(p => p._id === id);
     if (produtoIndex === -1) return;
 
     const produtoOriginal = listaDeProdutos[produtoIndex];
 
-    // O SEGREDO ESTÁ AQUI: Removemos o _id do pacote para o MongoDB não bloquear a edição!
-    const { _id, ...dadosParaSalvar } = produtoOriginal;
+    // Tiramos _id e __v (versão interna do Mongo que costuma dar conflito)
+    const { _id, __v, ...dadosParaSalvar } = produtoOriginal;
     dadosParaSalvar.img = novaUrl;
     
     try {
@@ -345,15 +344,17 @@ async function confirmarImagem() {
         });
 
         if (resposta.ok) {
-            // Atualiza a memória e redesenha (Otimizado, não puxa tudo do banco de novo)
             listaDeProdutos[produtoIndex].img = novaUrl;
             fecharModalImagem();
             renderizarTabela(); 
+            alert('FOTO SALVA COM SUCESSO PORRA!'); // Vamos comemorar quando der
         } else {
-            alert('Erro ao salvar a imagem no banco de dados.');
+            // AQUI ESTÁ O X9! Ele vai ler o erro do Render e jogar na tela!
+            const erroReal = await resposta.json();
+            alert(`O SERVIDOR RECUSOU A FOTO! Motivo: ${JSON.stringify(erroReal)}`);
         }
     } catch (erro) {
-        alert('Falha na comunicação com o servidor.');
+        alert(`O SERVIDOR NEM RESPONDEU! Erro: ${erro.message}`);
     }
 }
 
