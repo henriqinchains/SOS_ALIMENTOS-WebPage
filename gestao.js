@@ -278,3 +278,63 @@ function prepararNovoProduto() {
 function fecharFormulario() {
     document.getElementById('formManual').classList.add('hidden');
 }
+
+// ==========================================
+// 4. MINI CRUD DE IMAGEM (MODAL)
+// ==========================================
+
+function abrirModalImagem() {
+    // Pega a URL que já está salva no input invisível
+    const urlAtual = document.getElementById('imgProduto').value;
+    document.getElementById('inputUrlImagem').value = urlAtual;
+    
+    atualizarPreviewModal();
+    document.getElementById('modalImagem').classList.remove('hidden');
+}
+
+function fecharModalImagem() {
+    document.getElementById('modalImagem').classList.add('hidden');
+}
+
+function atualizarPreviewModal() {
+    const url = document.getElementById('inputUrlImagem').value;
+    const imgEl = document.getElementById('modalPreviewImg');
+    const textoEl = document.getElementById('modalPreviewTexto');
+    
+    if (url) {
+        imgEl.src = url;
+        imgEl.style.display = 'block';
+        textoEl.style.display = 'none';
+    } else {
+        imgEl.style.display = 'none';
+        textoEl.style.display = 'block';
+    }
+}
+
+function confirmarImagem() {
+    const url = document.getElementById('inputUrlImagem').value;
+    
+    // 1. Salva a URL no input invisível pro formulário poder enviar pro banco
+    document.getElementById('imgProduto').value = url;
+    
+    // 2. Atualiza o quadradinho na tela
+    const thumbImg = document.getElementById('thumbPreview');
+    const thumbTexto = document.getElementById('thumbTexto');
+    
+    if (url) {
+        thumbImg.src = url;
+        thumbImg.style.display = 'block';
+        thumbTexto.style.display = 'none';
+    } else {
+        thumbImg.style.display = 'none';
+        thumbTexto.style.display = 'block';
+    }
+    
+    fecharModalImagem();
+}
+
+function removerImagem() {
+    // Zera o input do modal e já confirma a exclusão
+    document.getElementById('inputUrlImagem').value = '';
+    confirmarImagem();
+}
