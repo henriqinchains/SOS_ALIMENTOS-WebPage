@@ -44,7 +44,7 @@ function renderizarTabela() {
                 <td>R$ ${produto.valorProduto.toFixed(2).replace('.', ',')}</td>
                 <td>
                     <span class="status-badge" style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: ${produto.emPromocao ? '#fff3cd' : '#f8f9fa'}; color: ${produto.emPromocao ? '#856404' : '#6c757d'}; border: 1px solid ${produto.emPromocao ? '#ffeeba' : '#dee2e6'};">
-                        ${produto.emPromocao ? '🔥 Sim' : 'Não'}
+                        ${produto.emPromocao ? 'Sim' : 'Não'}
                     </span>
                 </td>
                 <td>
