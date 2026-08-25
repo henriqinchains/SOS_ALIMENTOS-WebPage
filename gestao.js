@@ -307,13 +307,17 @@ function fecharFormulario() {
 }
 
 // ==========================================
-// 4. MINI CRUD DE IMAGEM (MODAL)
+// 4. MINI CRUD DE IMAGEM (MODAL NA TABELA)
 // ==========================================
 
-function abrirModalImagem() {
-    // Pega a URL que já está salva no input invisível
-    const urlAtual = document.getElementById('imgProduto').value;
-    document.getElementById('inputUrlImagem').value = urlAtual;
+function abrirModalImagem(idProduto) {
+    // Acha quem é o produto que foi clicado
+    const produto = listaDeProdutos.find(p => p._id === idProduto);
+    if (!produto) return;
+
+    // Guarda o ID no modal e preenche a URL se já tiver
+    document.getElementById('modalProdutoId').value = produto._id;
+    document.getElementById('inputUrlImagem').value = produto.img || '';
     
     atualizarPreviewModal();
     document.getElementById('modalImagem').classList.remove('hidden');
@@ -338,30 +342,34 @@ function atualizarPreviewModal() {
     }
 }
 
-function confirmarImagem() {
-    const url = document.getElementById('inputUrlImagem').value;
+// Agora essa função fala direto com a API!
+async function confirmarImagem() {
+    const id = document.getElementById('modalProdutoId').value;
+    const novaUrl = document.getElementById('inputUrlImagem').value;
     
-    // 1. Salva a URL no input invisível pro formulário poder enviar pro banco
-    document.getElementById('imgProduto').value = url;
+    // Pega todos os dados do produto e atualiza SÓ a imagem
+    const produto = listaDeProdutos.find(p => p._id === id);
+    const produtoAtualizado = { ...produto, img: novaUrl };
     
-    // 2. Atualiza o quadradinho na tela
-    const thumbImg = document.getElementById('thumbPreview');
-    const thumbTexto = document.getElementById('thumbTexto');
-    
-    if (url) {
-        thumbImg.src = url;
-        thumbImg.style.display = 'block';
-        thumbTexto.style.display = 'none';
-    } else {
-        thumbImg.style.display = 'none';
-        thumbTexto.style.display = 'block';
+    try {
+        const resposta = await fetch(`${render}/api/produtos/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(produtoAtualizado)
+        });
+
+        if (resposta.ok) {
+            fecharModalImagem();
+            carregarProdutos(); // Recarrega a tabela inteira e a foto já brota na tela!
+        } else {
+            alert('Erro ao salvar a imagem no banco de dados.');
+        }
+    } catch (erro) {
+        alert('Falha na comunicação com o servidor.');
     }
-    
-    fecharModalImagem();
 }
 
 function removerImagem() {
-    // Zera o input do modal e já confirma a exclusão
     document.getElementById('inputUrlImagem').value = '';
-    confirmarImagem();
+    confirmarImagem(); // Já salva vazio no banco
 }
