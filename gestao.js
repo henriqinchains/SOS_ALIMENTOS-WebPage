@@ -342,19 +342,12 @@ async function confirmarImagem() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosParaSalvar)
         });
-
-        if (resposta.ok) {
-            listaDeProdutos[produtoIndex].img = novaUrl;
-            fecharModalImagem();
-            renderizarTabela(); 
-            alert('FOTO SALVA COM SUCESSO PORRA!'); // Vamos comemorar quando der
-        } else {
-            // AQUI ESTÁ O X9! Ele vai ler o erro do Render e jogar na tela!
-            const erroReal = await resposta.json();
-            alert(`O SERVIDOR RECUSOU A FOTO! Motivo: ${JSON.stringify(erroReal)}`);
+        listaDeProdutos[produtoIndex].img = novaUrl;
+        fecharModalImagem();
+        renderizarTabela();
         }
     } catch (erro) {
-        alert(`O SERVIDOR NEM RESPONDEU! Erro: ${erro.message}`);
+        console.log(`O SERVIDOR NEM RESPONDEU! Erro: ${erro.message}`);
     }
 }
 
