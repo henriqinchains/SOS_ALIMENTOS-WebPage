@@ -2,15 +2,17 @@
    1. VARIÁVEIS E RESET
    ========================== */
 :root {
-    --primaria: #e53935; /* Vermelho mercadinho */
-    --secundaria: #ff9800; /* Laranja ofertas */
+    --primaria: #e53935;
+    /* Vermelho mercadinho */
+    --secundaria: #ff9800;
+    /* Laranja ofertas */
     --fundo: #f4f6f8;
     --texto-escuro: #2d3436;
     --texto-claro: #636e72;
     --branco: #ffffff;
     --borda: #dfe6e9;
-    --sombra: 0 4px 15px rgba(0,0,0,0.05);
-    --sombra-hover: 0 10px 25px rgba(0,0,0,0.1);
+    --sombra: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --sombra-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -20,18 +22,37 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-h1, h2, h3, .btn, .btn-pesquisar, .tab-btn {
+h1,
+h2,
+h3,
+.btn,
+.btn-pesquisar,
+.tab-btn {
     font-family: 'Poppins', system-ui, -apple-system, sans-serif;
 }
 
 html {
     overflow-x: hidden;
+    height: 100%;
 }
 
 body {
     background-color: var(--fundo);
     color: var(--texto-escuro);
     overflow-x: hidden;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Faz o conteúdo principal "esticar" para empurrar o rodapé para o final
+   da tela mesmo quando há pouco conteúdo (ex: poucos produtos carregados) */
+main#app {
+    flex: 1 0 auto;
+}
+
+.rodape {
+    flex-shrink: 0;
 }
 
 /* ==========================
@@ -140,8 +161,15 @@ header {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .titulo-pagina {
@@ -167,32 +195,64 @@ header {
 .carrossel {
     position: relative;
     width: 100%;
-    height: 350px;
+    height: 380px;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: var(--sombra);
+    background: linear-gradient(135deg, var(--texto-escuro) 0%, #1a1d1e 100%);
 }
 
-@media (max-width: 600px) {
+.botao-ant,
+.botao-prox {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--texto-escuro);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: 0.2s;
+    box-shadow: var(--sombra);
+}
+
+@media (max-width: 768px) {
     .carrossel {
-        height: 200px;
+        /* O banner empilha imagem + texto no celular, então precisa de mais
+           altura (não menos) para caber tudo sem cortar */
+        height: 460px;
         border-radius: 12px;
     }
 
-    .slide {
-        font-size: 1.1rem;
-        padding: 0 15px;
-        text-align: center;
-    }
-
-    .botao-ant, .botao-prox {
+    .botao-ant,
+    .botao-prox {
         width: 36px;
         height: 36px;
         font-size: 1rem;
     }
 
-    .botao-ant { left: 10px; }
-    .botao-prox { right: 10px; }
+    .botao-ant {
+        left: 10px;
+    }
+
+    .botao-prox {
+        right: 10px;
+    }
+}
+
+@media (max-width: 420px) {
+    .carrossel {
+        height: 420px;
+    }
 }
 
 .slide {
@@ -209,13 +269,16 @@ header {
     transition: opacity 0.6s ease;
 }
 
-.slide.ativo { opacity: 1; }
+.slide.ativo {
+    opacity: 1;
+}
 
-.botao-ant, .botao-prox {
+.botao-ant,
+.botao-prox {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     color: var(--texto-escuro);
     border: none;
     width: 45px;
@@ -228,13 +291,19 @@ header {
     box-shadow: var(--sombra);
 }
 
-.botao-ant:hover, .botao-prox:hover {
+.botao-ant:hover,
+.botao-prox:hover {
     background: var(--branco);
     transform: translateY(-50%) scale(1.1);
 }
 
-.botao-ant { left: 20px; }
-.botao-prox { right: 20px; }
+.botao-ant {
+    left: 20px;
+}
+
+.botao-prox {
+    right: 20px;
+}
 
 .carrossel-dots {
     position: absolute;
@@ -249,12 +318,14 @@ header {
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.55);
+    background: rgba(255, 255, 255, 0.55);
     cursor: pointer;
     transition: background 0.2s, transform 0.2s;
 }
 
-.dot:hover { background: rgba(255,255,255,0.85); }
+.dot:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
 
 .dot.ativo {
     background: var(--branco);
@@ -412,18 +483,13 @@ header {
    DESIGN DOS BANNERS HORIZONTAIS
    ========================================== */
 
-.slide {
-    height: 350px; /* Altura generosa pro banner */
-    width: 100%;
-}
-
 .banner-content {
     display: flex;
     align-items: center;
     justify-content: space-around;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #FF9F43 0%, #EE5253 100%);
+    background: linear-gradient(135deg, var(--primaria) 0%, #8e1a17 100%);
     border-radius: 12px;
     padding: 20px 40px;
     box-sizing: border-box;
@@ -441,10 +507,12 @@ header {
 }
 
 .banner-img-wrapper img {
-    max-height: 110%; /* Deixa a imagem estourar um pouquinho a caixa, fica lindo */
+    max-height: 110%;
+    /* Deixa a imagem estourar um pouquinho a caixa, fica lindo */
     max-width: 100%;
     object-fit: contain;
-    filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.3)); /* Sombra chique na imagem solta */
+    filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.3));
+    /* Sombra chique na imagem solta */
 }
 
 .banner-no-img {
@@ -464,8 +532,9 @@ header {
     font-weight: 800;
     padding: 15px;
     border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transform: rotate(15deg); /* Dá um ar de 'etiqueta colada' */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: rotate(15deg);
+    /* Dá um ar de 'etiqueta colada' */
 }
 
 /* Área do Texto (Direita) */
@@ -487,11 +556,12 @@ header {
 }
 
 .banner-info h2 {
-    font-size: 2.8rem; /* Nome GIGANTE */
+    font-size: 2.8rem;
+    /* Nome GIGANTE */
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .banner-precos {
@@ -507,29 +577,77 @@ header {
 }
 
 .banner-preco-novo {
-    font-size: 3rem; /* Preço GIGANTE */
+    font-size: 3rem;
+    /* Preço GIGANTE */
     font-weight: 800;
     color: #fff;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsividade (Para não quebrar no celular) */
 @media (max-width: 768px) {
     .banner-content {
         flex-direction: column;
+        justify-content: center;
         padding: 20px;
+        gap: 10px;
     }
+
     .banner-img-wrapper {
         width: 60%;
-        height: 50%;
+        height: 45%;
     }
+
     .banner-info {
         width: 100%;
         text-align: center;
     }
-    .banner-info h2 { font-size: 1.8rem; }
-    .banner-preco-novo { font-size: 2rem; }
-    .banner-precos { justify-content: center; }
+
+    .banner-info h2 {
+        font-size: 1.8rem;
+    }
+
+    .banner-preco-novo {
+        font-size: 2rem;
+    }
+
+    .banner-precos {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 420px) {
+    .banner-content {
+        padding: 16px;
+    }
+
+    .banner-img-wrapper {
+        width: 55%;
+        height: 40%;
+    }
+
+    .banner-tag {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    .banner-info h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+
+    .banner-preco-antigo {
+        font-size: 1.1rem;
+    }
+
+    .banner-preco-novo {
+        font-size: 1.6rem;
+    }
+
+    .badge-desconto {
+        font-size: 1rem;
+        padding: 10px;
+    }
 }
 
 /* No celular, o card vira uma linha horizontal (foto à esquerda, dados à direita) */
@@ -619,17 +737,22 @@ header {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.045), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.045), transparent);
     transform: translateX(-100%);
     animation: brilho 1.4s infinite;
 }
 
 @keyframes brilho {
-    100% { transform: translateX(100%); }
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 @media (max-width: 699px) {
-    .skeleton-card { height: 88px; border-radius: 12px; }
+    .skeleton-card {
+        height: 88px;
+        border-radius: 12px;
+    }
 }
 
 /* Link ativo no menu */
@@ -653,7 +776,7 @@ header {
     justify-content: space-between;
     gap: 30px;
     padding-bottom: 25px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .rodape-marca h3 {
@@ -668,20 +791,23 @@ header {
     max-width: 280px;
 }
 
-.rodape-links, .rodape-contato {
+.rodape-links,
+.rodape-contato {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.rodape-links a, .rodape-contato a {
+.rodape-links a,
+.rodape-contato a {
     color: #dfe6e9;
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s;
 }
 
-.rodape-links a:hover, .rodape-contato a:hover {
+.rodape-links a:hover,
+.rodape-contato a:hover {
     color: var(--secundaria);
 }
 
@@ -734,7 +860,10 @@ header {
     transition: opacity 0.2s;
 }
 
-.link-voltar:hover { opacity: 1; text-decoration: underline; }
+.link-voltar:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
 
 @media (max-width: 600px) {
     .link-voltar {
@@ -746,7 +875,7 @@ header {
 
 /* Container e Cards */
 .container {
-    max-width: 1000px;
+    max-width: 1400px;
     margin: 0 auto 60px auto;
     padding: 0 5%;
     display: flex;
@@ -858,7 +987,9 @@ header {
     transition: 0.2s;
 }
 
-.btn:hover { background: #c62828; }
+.btn:hover {
+    background: #c62828;
+}
 
 .btn-outline {
     background: transparent;
@@ -875,13 +1006,17 @@ header {
     background: #10ac84;
 }
 
-.btn-success:hover { background: #01a3a4; }
+.btn-success:hover {
+    background: #01a3a4;
+}
 
 .btn-danger {
     background: #e53935;
 }
 
-.btn-danger:hover { background: #c62828; }
+.btn-danger:hover {
+    background: #c62828;
+}
 
 .btn-sm {
     padding: 6px 14px;
@@ -896,26 +1031,88 @@ header {
 
 /* Tabelas (Preview e Produtos) */
 .table-container {
-    width: 1200px;
-    overflow-x: auto; /* Responsivo para celular */
+    width: 100%;
+    overflow-x: auto;
+    /* Responsivo para celular */
     border-radius: 8px;
     border: 1px solid var(--borda);
 }
 
 table {
     width: 100%;
+    min-width: 1000px;
+    /* Garante espaço suficiente pra coluna Nome e pros botões lado a lado */
     border-collapse: collapse;
     text-align: left;
+    table-layout: fixed;
+    /* Evita que o navegador distribua o espaço de forma esquisita entre as colunas */
+}
+
+/* Larguras por coluna: fixo em px nas colunas curtas (não quebram linha),
+   o resto do espaço sobra pra coluna "Nome", que é a mais importante */
+th:nth-child(1),
+td:nth-child(1) {
+    width: 110px;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    width: auto;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+    width: 80px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+    width: 120px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+    width: 130px;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+    width: 100px;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+    width: 220px;
 }
 
 thead {
     background-color: var(--fundo);
 }
 
-th, td {
+th,
+td {
     padding: 15px;
     border-bottom: 1px solid var(--borda);
     color: var(--texto-escuro);
+}
+
+td {
+    overflow-wrap: break-word;
+    /* nomes de produto longos podem quebrar linha */
+}
+
+th {
+    white-space: normal;
+    /* cabeçalho quebra só no espaço, nunca no meio da palavra */
+}
+
+/* Coluna de Ações: botões lado a lado, nunca empilhados */
+td:last-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 th {
@@ -928,15 +1125,55 @@ tbody tr:hover {
 }
 
 /* Utilitários */
-.hidden { display: none !important; }
-.mt-1 { margin-top: 15px; }
+.hidden {
+    display: none !important;
+}
 
-.abas { display: flex; justify-content: center; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
-.tab-btn { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); border: none; padding: 10px 20px; font-size: 15px; cursor: pointer; border-radius: 20px; font-weight: 600; transition: 0.2s; }
-.tab-btn:hover { background: rgba(255,255,255,0.25); color: white; }
-.tab-btn.ativo { color: var(--primaria); background: var(--branco); }
-.input-tabela { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-.input-curto { max-width: 90px; }
+.mt-1 {
+    margin-top: 15px;
+}
+
+.abas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.tab-btn.ativo {
+    color: var(--primaria);
+    background: var(--branco);
+}
+
+.input-tabela {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input-curto {
+    max-width: 90px;
+}
 
 /* ==========================================
    MINI CRUD DE IMAGEM
@@ -957,15 +1194,18 @@ tbody tr:hover {
     margin: 0 auto;
     transition: 0.2s;
 }
+
 .thumb-tabela:hover {
     border-color: #0d6efd;
     background: #e9ecef;
 }
+
 .thumb-tabela img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
 .thumb-tabela span {
     font-size: 18px;
     color: #adb5bd;
@@ -974,13 +1214,17 @@ tbody tr:hover {
 /* O Modal de Preview */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
 }
+
 .modal-content {
     background: #fff;
     padding: 25px;
@@ -988,8 +1232,9 @@ tbody tr:hover {
     width: 90%;
     max-width: 450px;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
+
 .modal-preview-area {
     width: 100%;
     height: 250px;
@@ -1002,11 +1247,13 @@ tbody tr:hover {
     background: #f1f1f1;
     overflow: hidden;
 }
+
 .modal-preview-area img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
+
 .modal-botoes {
     display: flex;
     justify-content: space-between;

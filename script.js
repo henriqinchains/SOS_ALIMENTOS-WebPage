@@ -36,11 +36,16 @@ window.addEventListener('load', router);
 // 2. LÓGICA DO CARROSSEL
 // ==========================
 let slideIndex = 0;
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
 let carrosselAutoplay;
 
+// Sempre busca os slides/dots atuais na hora de usar, porque o carrossel
+// dinâmico recria esses elementos depois que os produtos chegam da API.
 function mostrarSlide(index) {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    if (!slides.length) return;
+
     // Esconde todos os slides
     slides.forEach(slide => slide.classList.remove('ativo'));
     
@@ -135,12 +140,37 @@ function calcularMaioresDescontos(produtos, limite = 3) {
     return comDesconto.slice(0, limite);
 }
 
+// Espera uma imagem carregar de verdade antes de seguir em frente
+// (resolve mesmo se der erro, pra um banner sem imagem não travar os outros)
+function preCarregarImagem(url) {
+    return new Promise((resolve) => {
+        if (!url) return resolve();
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = url;
+    });
+}
+
 // 2. Constrói o HTML dos Banners e injeta na tela
-function renderizarCarrosselDinâmico(produtosDestaque) {
+// Só mostra o carrossel depois que TODAS as imagens já baixaram — se não
+// houver nenhuma promoção real, o carrossel fica escondido (nada de banner
+// vazio ou provisório).
+async function renderizarCarrosselDinâmico(produtosDestaque) {
+    const carrossel = document.getElementById('banner-carrossel');
     const containerSlides = document.querySelector('.slides-container');
     const containerDots = document.querySelector('.carrossel-dots');
     
-    if (!containerSlides || !containerDots || produtosDestaque.length === 0) return;
+    if (!carrossel || !containerSlides || !containerDots) return;
+
+    if (produtosDestaque.length === 0) {
+        carrossel.classList.add('hidden');
+        containerSlides.innerHTML = '';
+        containerDots.innerHTML = '';
+        return;
+    }
+
+    await Promise.all(produtosDestaque.map(produto => preCarregarImagem(produto.img)));
 
     containerSlides.innerHTML = '';
     containerDots.innerHTML = '';
@@ -175,8 +205,9 @@ function renderizarCarrosselDinâmico(produtosDestaque) {
         containerDots.insertAdjacentHTML('beforeend', dotHTML);
     });
     
-    // Reseta a lógica de animação
+    // Reseta a lógica de animação e só então revela o carrossel
     slideIndex = 0;
+    carrossel.classList.remove('hidden');
 }
 
 // Renderiza uma lista de produtos dentro de um container
@@ -254,7 +285,7 @@ async function carregarProdutos() {
         todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
 
         const maioresDescontos = calcularMaioresDescontos(todosProdutos, 3); // Pega o Top 3
-        renderizarCarrosselDinâmico(maioresDescontos); // Desenha os banners
+        await renderizarCarrosselDinâmico(maioresDescontos); // Só troca o banner quando as fotos estiverem prontas
 
         // Desenha os grids
         renderizarProdutos(todosProdutos, gridProdutos, false);

@@ -202,6 +202,12 @@ function renderizarTabelaPreview() {
                            class="input-tabela input-curto">
                 </td>
                 <td>
+                    <select onchange="atualizarItemPreview(${index}, 'emPromocao', this.value)" class="input-tabela">
+                        <option value="false" ${!p.emPromocao ? 'selected' : ''}>Não</option>
+                        <option value="true" ${p.emPromocao ? 'selected' : ''}>Sim</option>
+                    </select>
+                </td>
+                <td>
                     <select onchange="atualizarItemPreview(${index}, 'ativo', this.value)" class="input-tabela">
                         <option value="true" ${p.ativo ? 'selected' : ''}>Sim</option>
                         <option value="false" ${!p.ativo ? 'selected' : ''}>Não</option>
@@ -219,7 +225,7 @@ function atualizarItemPreview(index, campo, valor) {
     if (campo === 'valorProduto') {
         dadosPlanilhaMemoria[index][campo] = parseFloat(valor) || 0;
         dadosPlanilhaMemoria[index]['valoremPromocao'] = parseFloat(valor) || 0; 
-    } else if (campo === 'ativo') {
+    } else if (campo === 'ativo' || campo === 'emPromocao') {
         dadosPlanilhaMemoria[index][campo] = (valor === 'true');
     } else {
         dadosPlanilhaMemoria[index][campo] = valor;
@@ -345,7 +351,6 @@ async function confirmarImagem() {
         listaDeProdutos[produtoIndex].img = novaUrl;
         fecharModalImagem();
         renderizarTabela();
-        }
     } catch (erro) {
         console.log(`Erro: ${erro.message}`);
     }
