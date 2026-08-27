@@ -352,19 +352,23 @@ function abrirModalImagem(idProduto) {
     document.getElementById('modalImagem').classList.remove('hidden');
 }
 
+// Fechar e limpar todo o modal
 function fecharModalImagem() {
     document.getElementById('modalImagem').classList.add('hidden');
-    // Limpa a tela de corte se tiver
+    
+    // Restaura o visual padrão da coluna direita
     document.getElementById('areaCorte').style.display = 'none';
+    document.getElementById('textoAreaCorte').style.display = 'flex';
+    document.getElementById('inputUploadImagem').value = '';
+    
     if (cropper) {
         cropper.destroy();
         cropper = null;
     }
-    document.getElementById('inputUploadImagem').value = '';
     
     // Restaura os botões originais caso tenham mudado
     document.getElementById('botoesModalImagem').innerHTML = `
-        <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover</button>
+        <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover Imagem</button>
         <div>
             <button class="btn btn-outline" type="button" onclick="fecharModalImagem()">Cancelar</button>
             <button class="btn btn-success" type="button" onclick="confirmarImagem()">Salvar</button>
@@ -395,14 +399,18 @@ function iniciarCorte(event) {
     const imgElement = document.getElementById('imagemParaCortar');
     imgElement.src = urlTemporaria;
 
+    // Mostra o palco de corte e esconde a mensagem placeholder do lado direito
     document.getElementById('areaCorte').style.display = 'block';
-    document.getElementById('modalPreviewImg').style.display = 'none';
-    document.getElementById('modalPreviewTexto').style.display = 'none';
+    document.getElementById('textoAreaCorte').style.display = 'none';
+
+    // Limpa o campo de URL da esquerda para evitar que o usuário tente salvar as duas coisas ao mesmo tempo
+    document.getElementById('inputUrlImagem').value = '';
+    atualizarPreviewModal();
 
     if (cropper) cropper.destroy();
 
     cropper = new Cropper(imgElement, {
-        aspectRatio: 1, // Força a ser um quadrado perfeito pra vitrine!
+        aspectRatio: 1, 
         viewMode: 1,
         autoCropArea: 0.9,
     });
