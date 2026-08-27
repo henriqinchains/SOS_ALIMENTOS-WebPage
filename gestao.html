@@ -168,33 +168,46 @@
 
     <!-- MODAL DE IMAGEM -->
     <div id="modalImagem" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3>Gerenciar Imagem</h3>
-
+        <!-- Deixamos o modal largo (800px) -->
+        <div class="modal-content" style="max-width: 800px; width: 95%;">
+            <h3 style="margin-bottom: 20px;">Gerenciar Imagem</h3>
             <input type="hidden" id="modalProdutoId">
             
-            <div class="modal-preview-area">
-                <img id="modalPreviewImg" src="" style="display: none;">
-                <div id="modalPreviewTexto">Nenhuma imagem selecionada</div>
-            </div>
-    
-            <div class="input-group" style="margin-top: 15px; text-align: left;">
-                <label>Opção 1: Cole um Link da Imagem (URL)</label>
-                <input type="url" id="inputUrlImagem" placeholder="Cole o link da internet aqui..." oninput="atualizarPreviewModal()">
+            <!-- FLEXBOX: Divide a tela em duas colunas LADO A LADO -->
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; text-align: left;">
                 
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ccc;">
-                
-                <label>Opção 2: Ou faça Upload (Corte a foto na tela)</label>
-                <input type="file" id="inputUploadImagem" accept="image/*" onchange="iniciarCorte(event)" style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
-                
-                <!-- O Palco do Cropper (Inicia escondido) -->
-                <div id="areaCorte" style="display: none; margin-top: 15px; width: 100%; max-height: 300px;">
-                    <img id="imagemParaCortar" style="max-width: 100%; display: block;">
+                <!-- COLUNA ESQUERDA: VIA URL -->
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="color: #333; margin-bottom: 10px; font-size: 15px;">Opção 1: Link da Internet (URL)</h4>
+                    <input type="url" id="inputUrlImagem" placeholder="Cole o link da internet aqui..." oninput="atualizarPreviewModal()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px;">
+                    
+                    <div class="modal-preview-area" style="background: #f8f9fa; border: 1px dashed #ccc; border-radius: 8px; padding: 10px; height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img id="modalPreviewImg" src="" style="max-width: 100%; max-height: 100%; display: none;">
+                        <div id="modalPreviewTexto" style="color: #6c757d;">Cole a URL para visualizar</div>
+                    </div>
                 </div>
+
+                <!-- COLUNA DIREITA: VIA UPLOAD E CORTE -->
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="color: #333; margin-bottom: 10px; font-size: 15px;">Opção 2: Enviar arquivo do PC/Celular</h4>
+                    <input type="file" id="inputUploadImagem" accept="image/*" onchange="iniciarCorte(event)" style="width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 4px; background: #fff; margin-bottom: 15px;">
+                    
+                    <!-- Palco do Cropper (Inicia escondido) -->
+                    <div id="areaCorte" style="display: none; width: 100%; height: 250px; background: #000; border-radius: 8px; overflow: hidden;">
+                        <img id="imagemParaCortar" style="max-width: 100%; display: block;">
+                    </div>
+                    
+                    <!-- Mensagem placeholder enquanto não houver arquivo -->
+                    <div id="textoAreaCorte" style="background: #f8f9fa; border: 1px dashed #ccc; border-radius: 8px; padding: 10px; height: 250px; display: flex; align-items: center; justify-content: center; color: #6c757d; text-align: center;">
+                        Selecione um arquivo para recortar
+                    </div>
+                </div>
+                
             </div>
     
-            <div class="modal-botoes" id="botoesModalImagem">
-                <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover</button>
+            <!-- RODAPÉ DOS BOTÕES -->
+            <div class="modal-botoes" id="botoesModalImagem" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between;">
+                <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover Imagem</button>
                 <div>
                     <button class="btn btn-outline" type="button" onclick="fecharModalImagem()">Cancelar</button>
                     <button class="btn btn-success" type="button" onclick="confirmarImagem()">Salvar</button>
