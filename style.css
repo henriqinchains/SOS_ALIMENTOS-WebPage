@@ -125,6 +125,38 @@ header {
     color: var(--primaria);
 }
 
+/* ==========================================
+   HEADER: LOGO E REDES SOCIAIS
+   ========================================== */
+
+.logo-e-sociais {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Espaço entre o nome SOS ALIMENTOS e os ícones */
+}
+
+.redes-sociais {
+    display: flex;
+    gap: 15px; /* Espaço entre o WhatsApp e o Instagram */
+}
+
+.redes-sociais a {
+    color: #333; /* Cor neutra para combinar com a logo */
+    font-size: 26px; /* Tamanho dos ícones */
+    text-decoration: none;
+    transition: transform 0.2s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.redes-sociais a:hover {
+    transform: scale(1.15); /* Efeito de crescer ao passar o mouse */
+}
+
+/* Cores oficiais ao passar o mouse */
+.redes-sociais .icon-zap:hover { color: #25D366; }
+.redes-sociais .icon-insta:hover { color: #E1306C; }
+
 @media (max-width: 480px) {
     .nav-bar-principal {
         font-size: 0.72rem;
@@ -832,6 +864,48 @@ header {
 /* ==========================
    6. PÁGINA DE GESTÃO (ADMIN)
    ========================== */
+
+/* TELA DE LOGIN (SPA GESTÃO)*/
+.login-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e272e 0%, #2f3640 100%); /* Fundo escuro elegante */
+}
+
+.login-box {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    color: #2f3542;
+    margin-bottom: 5px;
+    font-size: 24px;
+}
+
+.login-box p {
+    color: #747d8c;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.mensagem-erro {
+    color: #ff4757;
+    background: #ffdfe4;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
 
 /* Header Admin Simplificado */
 .header-admin {

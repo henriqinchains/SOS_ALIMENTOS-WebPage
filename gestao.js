@@ -1,7 +1,39 @@
 const render = "https://sos-alimentos-webpage-servidor.onrender.com";
 
 let listaDeProdutos = [];
-let dadosPlanilhaMemoria = []; 
+let dadosPlanilhaMemoria = [];
+
+// ==========================================
+// 0. SISTEMA DE LOGIN SPA
+// ==========================================
+async function fazerLogin(event) {
+    event.preventDefault();
+    const usuario = document.getElementById('loginUsuario').value;
+    const senha = document.getElementById('loginSenha').value;
+    const erroDiv = document.getElementById('loginErro');
+    
+    erroDiv.classList.add('hidden'); // Esconde erro antigo
+
+    try {
+        const resposta = await fetch(`${render}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, senha }),
+            credentials: 'include' // ISSO AQUI É VITAL! Avisa pra salvar o Cookie.
+        });
+
+        if (resposta.ok) {
+            // A MÁGICA: Esconde o login, mostra o painel e carrega os produtos!
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('tela-painel').classList.remove('hidden');
+            carregarProdutos(); 
+        } else {
+            erroDiv.classList.remove('hidden'); // Mostra a faixa vermelha de erro
+        }
+    } catch (erro) {
+        alert("Falha ao comunicar com o servidor.");
+    }
+}
 
 // ==========================================
 // 1. GERENCIAMENTO DE PRODUTOS (VITRINE)
@@ -82,6 +114,7 @@ async function salvarProduto(event) {
             resposta = await fetch(`${render}/api/produtos/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(dadosFormulario)
             });
         } else {
@@ -89,6 +122,7 @@ async function salvarProduto(event) {
             resposta = await fetch(`${render}/api/produtos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(dadosFormulario)
             });
         }
@@ -131,7 +165,11 @@ async function deletarProduto(id) {
     if (!confirm('Tem certeza que deseja apagar este produto?')) return;
 
     try {
-        const resposta = await fetch(`${render}/api/produtos/${id}`, { method: 'DELETE' });
+        const resposta = await fetch(`${render}/api/produtos/${id}`, 
+            { 
+                method: 'DELETE', 
+                credentials: 'include' 
+            });
         if (resposta.ok) carregarProdutos();
     } catch (erro) {
         alert('Erro ao tentar excluir o produto.');
@@ -156,6 +194,7 @@ async function preVisualizarCSV() {
     try {
         const resposta = await fetch(`${render}/api/produtos/preview-csv`, {
             method: 'POST',
+            credentials: 'include',
             body: formData
         });
 
@@ -245,6 +284,7 @@ async function confirmarImportacao() {
     try {
         const resposta = await fetch(`${render}/api/produtos/importar`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosPlanilhaMemoria)
         });
@@ -272,7 +312,7 @@ async function confirmarImportacao() {
 // 3. CONTROLE DE INTERFACE (ABAS E FORMS)
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', carregarProdutos);
+// document.addEventListener('DOMContentLoaded', carregarProdutos);
 
 function mudarAba(abaId) {
     document.querySelectorAll('.aba-conteudo').forEach(aba => aba.classList.add('hidden'));
@@ -346,11 +386,17 @@ async function confirmarImagem() {
         const resposta = await fetch(`${render}/api/produtos/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(dadosParaSalvar)
         });
-        listaDeProdutos[produtoIndex].img = novaUrl;
-        fecharModalImagem();
-        renderizarTabela();
+        
+        if (resposta.ok) {
+            listaDeProdutos[produtoIndex].img = novaUrl;
+            fecharModalImagem();
+            renderizarTabela();
+        } else {
+            alert("Erro ao salvar a imagem! Verifique seu login.");
+        }
     } catch (erro) {
         console.log(`Erro: ${erro.message}`);
     }

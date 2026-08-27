@@ -8,26 +8,35 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Link adicionado para puxar os ícones do WhatsApp e Instagram -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header>
         <!-- Navegação Principal -->
-        <div class="nav-bar-principal">
-            <nav>
-                <div class="first-line">
-                    <a href="#">WHATSAPP</a>
-                    <a href="#">INSTAGRAM</a>
-                </div>
-            </nav>
-        </div>
-        
-        <!-- Navegação Secundária -->
         <div class="nav-bar-secundaria">
-            <div class="logo">
-                <h2>SOS ALIMENTOS</h2>
+            
+            <!-- Grupo: Logo + Ícones Sociais -->
+            <div class="logo-e-sociais">
+                <div class="logo">
+                    <h2>SOS ALIMENTOS</h2>
+                </div>
+                
+                <div class="redes-sociais">
+                    <a href="https://wa.me/5511999999999" target="_blank" class="icon-zap" title="Nosso WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="https://instagram.com/sosalimentos" target="_blank" class="icon-insta" title="Nosso Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
+
+            <!-- Links de Navegação -->
             <div class="nav-links">
                 <a href="#ofertas">Ofertas da semana</a>
                 <a href="#produtos">Produtos</a>
