@@ -336,8 +336,10 @@ function fecharFormulario() {
 }
 
 // ==========================================
-// 4. MINI CRUD DE IMAGEM (MODAL NA TABELA)
+// 4. MINI CRUD DE IMAGEM (COM UPLOAD E RECORTE)
 // ==========================================
+
+let cropper = null; // Cérebro do recorte
 
 function abrirModalImagem(idProduto) {
     const produto = listaDeProdutos.find(p => p._id === idProduto);
@@ -352,6 +354,21 @@ function abrirModalImagem(idProduto) {
 
 function fecharModalImagem() {
     document.getElementById('modalImagem').classList.add('hidden');
+    // Limpa a tela de corte se tiver
+    document.getElementById('areaCorte').style.display = 'none';
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    document.getElementById('inputUploadImagem').value = '';
+    
+    // Restaura os botões originais caso tenham mudado
+    document.getElementById('botoesModalImagem').innerHTML = `
+        <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover</button>
+        <div>
+            <button class="btn btn-outline" type="button" onclick="fecharModalImagem()">Cancelar</button>
+            <button class="btn btn-success" type="button" onclick="confirmarImagem()">Salvar</button>
+        </div>`;
 }
 
 function atualizarPreviewModal() {
@@ -369,16 +386,74 @@ function atualizarPreviewModal() {
     }
 }
 
+// Inicia a ferramenta de recorte quando o usuário escolhe um arquivo
+function iniciarCorte(event) {
+    const arquivo = event.target.files[0];
+    if (!arquivo) return;
+
+    const urlTemporaria = URL.createObjectURL(arquivo);
+    const imgElement = document.getElementById('imagemParaCortar');
+    imgElement.src = urlTemporaria;
+
+    document.getElementById('areaCorte').style.display = 'block';
+    document.getElementById('modalPreviewImg').style.display = 'none';
+    document.getElementById('modalPreviewTexto').style.display = 'none';
+
+    if (cropper) cropper.destroy();
+
+    cropper = new Cropper(imgElement, {
+        aspectRatio: 1, // Força a ser um quadrado perfeito pra vitrine!
+        viewMode: 1,
+        autoCropArea: 0.9,
+    });
+}
+
+// Salva a imagem (seja via URL ou Upload cortado)
 async function confirmarImagem() {
     const id = document.getElementById('modalProdutoId').value;
     const novaUrl = document.getElementById('inputUrlImagem').value;
     
     const produtoIndex = listaDeProdutos.findIndex(p => p._id === id);
     if (produtoIndex === -1) return;
-
     const produtoOriginal = listaDeProdutos[produtoIndex];
 
-    // Tiramos _id e __v (versão interna do Mongo que costuma dar conflito)
+    // ===============================================
+    // CENÁRIO 1: UPLOAD DE ARQUIVO CORTADO
+    // ===============================================
+    if (cropper) {
+        cropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob(async (blobImagemCortada) => {
+            const formData = new FormData();
+            formData.append('imagemFile', blobImagemCortada, 'produto.jpg'); 
+
+            try {
+                document.getElementById('botoesModalImagem').innerHTML = 'Enviando foto, aguarde... ⏳'; 
+                
+                const resposta = await fetch(`${render}/api/produtos/${id}/imagem`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData 
+                });
+                
+                if (resposta.ok) {
+                    const produtoAtualizado = await resposta.json();
+                    listaDeProdutos[produtoIndex].img = produtoAtualizado.img; 
+                    fecharModalImagem();
+                    renderizarTabela();
+                } else {
+                    alert("Erro ao salvar no Cloudinary. Verifique seu login.");
+                    fecharModalImagem();
+                }
+            } catch (erro) {
+                alert("Falha de conexão com o servidor no Upload.");
+                fecharModalImagem();
+            }
+        }, 'image/jpeg', 0.85); // Corta, converte pra jpg e comprime 15%
+        return; 
+    }
+
+    // ===============================================
+    // CENÁRIO 2: SALVAR VIA LINK DA INTERNET (URL)
+    // ===============================================
     const { _id, __v, ...dadosParaSalvar } = produtoOriginal;
     dadosParaSalvar.img = novaUrl;
     
@@ -395,7 +470,7 @@ async function confirmarImagem() {
             fecharModalImagem();
             renderizarTabela();
         } else {
-            alert("Erro ao salvar a imagem! Verifique seu login.");
+            alert("Erro ao salvar a URL da imagem! Verifique seu login.");
         }
     } catch (erro) {
         console.log(`Erro: ${erro.message}`);
