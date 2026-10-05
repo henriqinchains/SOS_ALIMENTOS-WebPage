@@ -40,6 +40,7 @@ body {
     background-color: var(--fundo);
     color: var(--texto-escuro);
     overflow-x: clip;
+    /* "hidden" aqui transformava o body em área de rolagem e quebrava o header fixo (sticky) */
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -1576,4 +1577,79 @@ tbody tr:hover {
     display: flex;
     justify-content: space-between;
     margin-top: 25px;
+}
+
+/* ==========================================
+   BOTÃO FLUTUANTE DO WHATSAPP
+   ========================================== */
+.whatsapp-flutuante {
+    position: fixed;
+    right: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    min-width: 60px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, background 0.2s;
+    animation: pulso-whatsapp 2.4s ease-out infinite;
+}
+
+.whatsapp-flutuante i {
+    font-size: 2.1rem;
+    line-height: 1;
+}
+
+/* Texto aparece ao passar o mouse (só no computador) */
+.whatsapp-flutuante-texto {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: max-width 0.3s ease, margin-left 0.3s ease;
+}
+
+.whatsapp-flutuante:hover {
+    background: #1ebe5b;
+    transform: translateY(-3px);
+}
+
+.whatsapp-flutuante:hover .whatsapp-flutuante-texto {
+    max-width: 140px;
+    margin-left: 10px;
+}
+
+@keyframes pulso-whatsapp {
+    0% {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(37, 211, 102, 0.55);
+    }
+
+    70% {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 0 16px rgba(37, 211, 102, 0);
+    }
+
+    100% {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+@media (max-width: 480px) {
+    .whatsapp-flutuante {
+        right: 14px;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        height: 56px;
+        min-width: 56px;
+        padding: 0 14px;
+    }
+
+    .whatsapp-flutuante i {
+        font-size: 1.9rem;
+    }
 }
