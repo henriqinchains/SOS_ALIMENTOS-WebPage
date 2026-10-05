@@ -39,7 +39,7 @@ html {
 body {
     background-color: var(--fundo);
     color: var(--texto-escuro);
-    overflow-x: hidden;
+    overflow-x: clip;
     min-height: 100%;
     display: flex;
     flex-direction: column;
