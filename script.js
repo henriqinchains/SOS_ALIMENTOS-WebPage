@@ -89,6 +89,21 @@ if (carrossel) {
 // ==========================
 const API_URL = 'https://sos-alimentos-webpage-servidor.onrender.com';
 
+// Começa a acordar o servidor (Render gratuito dorme) assim que o script carrega,
+// sem esperar a página inteira terminar de carregar. Principalmente útil no celular.
+fetch(`${API_URL}/health`).catch(() => { });
+
+// fetch que desiste depois de um tempo (no celular, uma requisição pode ficar pendurada para sempre)
+async function fetchComTimeout(url, ms = 10000) {
+    const controle = new AbortController();
+    const timer = setTimeout(() => controle.abort(), ms);
+    try {
+        return await fetch(url, { signal: controle.signal });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 let todosProdutos = [];
 
 // Formata número para moeda brasileira (R$)
@@ -248,10 +263,11 @@ function renderizarProdutos(lista, container, apenasPromocao) {
     });
 }
 
-async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
+// O Render gratuito pode levar de 30 a 90 segundos para acordar. Esperamos até ~2 minutos.
+async function esperarServidorAcordar(tentativas = 30, intervaloMs = 3000) {
     for (let i = 0; i < tentativas; i++) {
         try {
-            const resposta = await fetch(`${API_URL}/health`);
+            const resposta = await fetchComTimeout(`${API_URL}/health`, 8000);
             if (resposta.ok) return true;
         } catch (erro) {
             // servidor ainda dormindo, tenta de novo depois do intervalo
@@ -259,6 +275,20 @@ async function esperarServidorAcordar(tentativas = 5, intervaloMs = 4000) {
         await new Promise(resolve => setTimeout(resolve, intervaloMs));
     }
     return false;
+}
+
+// Aviso amigável enquanto o servidor acorda
+function mostrarAvisoServidorAcordando() {
+    const aviso = `
+        <p class="msg-estado">
+            ⏳ Carregando os produtos...<br>
+            O servidor estava descansando e pode levar até 1 minuto para acordar. Aguarde um instante!
+        </p>
+    `;
+    ['grid-produtos', 'grid-promocoes', 'grid-todos-ofertas'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = aviso;
+    });
 }
 
 function mostrarEsqueletoCarregando(container, quantidade) {
@@ -293,10 +323,13 @@ async function carregarProdutos() {
     mostrarEsqueletoCarregando(gridTodosOfertas, 4);
 
     const tentarBuscar = async () => {
-        const resposta = await fetch(`${API_URL}/api/produtos`);
+        const resposta = await fetchComTimeout(`${API_URL}/api/produtos`, 15000);
         if (!resposta.ok) throw new Error('Falha ao buscar produtos.');
         return resposta.json();
     };
+
+    // Se demorar, avisa o visitante que o servidor está acordando
+    const timerAviso = setTimeout(mostrarAvisoServidorAcordando, 5000);
 
     try {
         let dadosBrutos = [];
@@ -304,8 +337,14 @@ async function carregarProdutos() {
             dadosBrutos = await tentarBuscar();
         } catch (primeiroErro) {
             await esperarServidorAcordar();
-            dadosBrutos = await tentarBuscar();
+            try {
+                dadosBrutos = await tentarBuscar();
+            } catch (segundoErro) {
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                dadosBrutos = await tentarBuscar();
+            }
         }
+        clearTimeout(timerAviso);
 
         todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
 
@@ -325,6 +364,7 @@ async function carregarProdutos() {
         }
 
     } catch (erro) {
+        clearTimeout(timerAviso);
         console.error('Erro ao carregar produtos:', erro);
         mostrarEstadoErro();
     }
