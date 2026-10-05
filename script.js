@@ -4,15 +4,15 @@
 function router() {
     // Pega a hashtag da URL atual (ex: "#produtos"). Se não tiver, usa "#ofertas" como padrão.
     let hash = window.location.hash || '#ofertas';
-    
+
     // Remove o "#" para pegar só o ID da seção (ex: "produtos")
     let pageId = hash.replace('#', '');
-    
+
     // Esconde todas as páginas removendo a classe 'active'
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
-    
+
     // Tenta encontrar a seção correspondente e mostra ela
     const pageToShow = document.getElementById(pageId);
     if (pageToShow) {
@@ -48,12 +48,12 @@ function mostrarSlide(index) {
 
     // Esconde todos os slides
     slides.forEach(slide => slide.classList.remove('ativo'));
-    
+
     // Se passar do último, volta pro primeiro
     if (index >= slides.length) { slideIndex = 0; }
     // Se voltar antes do primeiro, vai pro último
     if (index < 0) { slideIndex = slides.length - 1; }
-    
+
     // Mostra o slide correto
     slides[slideIndex].classList.add('ativo');
     dots.forEach(dot => dot.classList.remove('ativo'));
@@ -109,8 +109,24 @@ function criarCardProduto(produto) {
            <p class="preco preco-promo">${formatarPreco(produto.valoremPromocao)}</p>`
         : `<p class="preco">${formatarPreco(produto.valorProduto)}</p>`;
 
+    const percentual = ehPromocaoDeVerdade
+        ? Math.round(((produto.valorProduto - produto.valoremPromocao) / produto.valorProduto) * 100)
+        : 0;
+
+    const seloHtml = ehPromocaoDeVerdade
+        ? `<span class="selo-promocao" title="Produto em promoção">
+               <i class="fas fa-bolt selo-icone"></i>
+               <span class="selo-texto">
+                   <span class="selo-label">Promoção</span>
+                   ${percentual > 0 ? `<strong class="selo-percentual">-${percentual}%</strong>` : ''}
+               </span>
+           </span>`
+        : '';
+
+    if (ehPromocaoDeVerdade) card.classList.add('produto-card-promo');
+
     card.innerHTML = `
-        ${ehPromocaoDeVerdade ? '<span class="selo-promocao">Promoção</span>' : ''}
+        ${seloHtml}
         <div class="img-placeholder">
             ${produto.img ? `<img src="${produto.img}" alt="${produto.nomeProduto}">` : 'Foto'}
         </div>
@@ -125,11 +141,11 @@ function criarCardProduto(produto) {
 // 1. Calcula o percentual e pega os N produtos com maior desconto
 function calcularMaioresDescontos(produtos, limite = 3) {
     // Filtra só quem é promoção de verdade
-    const promocoes = produtos.filter(p => p.emPromocao && p.valoremPromocao < p.valorProduto);
-    
+    const promocoes = produtos.filter(p => p.emPromocao && Number(p.valoremPromocao) < Number(p.valorProduto));
+
     // Calcula a porcentagem e salva temporariamente
     const comDesconto = promocoes.map(p => {
-        const percentual = ((p.valorProduto - p.valoremPromocao) / p.valorProduto) * 100;
+        const percentual = ((Number(p.valorProduto) - Number(p.valoremPromocao)) / Number(p.valorProduto)) * 100;
         return { ...p, percentualDesconto: percentual };
     });
 
@@ -148,6 +164,7 @@ function preCarregarImagem(url) {
         const img = new Image();
         img.onload = () => resolve();
         img.onerror = () => resolve();
+        setTimeout(resolve, 3000); // foto lenta não pode travar o carrossel
         img.src = url;
     });
 }
@@ -160,7 +177,7 @@ async function renderizarCarrosselDinâmico(produtosDestaque) {
     const carrossel = document.getElementById('banner-carrossel');
     const containerSlides = document.querySelector('.slides-container');
     const containerDots = document.querySelector('.carrossel-dots');
-    
+
     if (!carrossel || !containerSlides || !containerDots) return;
 
     if (produtosDestaque.length === 0) {
@@ -178,14 +195,18 @@ async function renderizarCarrosselDinâmico(produtosDestaque) {
     produtosDestaque.forEach((produto, index) => {
         const ativoClass = index === 0 ? 'ativo' : '';
         const imgPlaceholder = produto.img ? `<img src="${produto.img}" alt="${produto.nomeProduto}">` : '<div class="banner-no-img">📸 Imagem Indisponível</div>';
-        
+
         // HTML do Banner Horizontal
         const slideHTML = `
             <div class="slide ${ativoClass}">
                 <div class="banner-content">
                     <div class="banner-img-wrapper">
                         ${imgPlaceholder}
-                        <div class="badge-desconto">-${Math.round(produto.percentualDesconto)}%</div>
+                        <div class="badge-desconto">
+                            <span class="badge-pre">ECONOMIZE</span>
+                            <span class="badge-valor">-${Math.round(produto.percentualDesconto)}%</span>
+                            <span class="badge-off">OFF</span>
+                        </div>
                     </div>
                     <div class="banner-info">
                         <span class="banner-tag">OFERTA IMPERDÍVEL</span>
@@ -204,7 +225,7 @@ async function renderizarCarrosselDinâmico(produtosDestaque) {
         const dotHTML = `<span class="dot ${ativoClass}" onclick="irParaSlide(${index})"></span>`;
         containerDots.insertAdjacentHTML('beforeend', dotHTML);
     });
-    
+
     // Reseta a lógica de animação e só então revela o carrossel
     slideIndex = 0;
     carrossel.classList.remove('hidden');
@@ -256,16 +277,20 @@ function mostrarEstadoErro() {
     `;
     const gridProdutos = document.getElementById('grid-produtos');
     const gridPromocoes = document.getElementById('grid-promocoes');
+    const gridTodosOfertas = document.getElementById('grid-todos-ofertas');
     if (gridProdutos) gridProdutos.innerHTML = mensagemErro;
     if (gridPromocoes) gridPromocoes.innerHTML = mensagemErro;
+    if (gridTodosOfertas) gridTodosOfertas.innerHTML = mensagemErro;
 }
 
 async function carregarProdutos() {
     const gridProdutos = document.getElementById('grid-produtos');
     const gridPromocoes = document.getElementById('grid-promocoes');
+    const gridTodosOfertas = document.getElementById('grid-todos-ofertas');
 
     mostrarEsqueletoCarregando(gridProdutos, 4);
     mostrarEsqueletoCarregando(gridPromocoes, 3);
+    mostrarEsqueletoCarregando(gridTodosOfertas, 4);
 
     const tentarBuscar = async () => {
         const resposta = await fetch(`${API_URL}/api/produtos`);
@@ -284,13 +309,20 @@ async function carregarProdutos() {
 
         todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
 
-        const maioresDescontos = calcularMaioresDescontos(todosProdutos, 3); // Pega o Top 3
-        await renderizarCarrosselDinâmico(maioresDescontos); // Só troca o banner quando as fotos estiverem prontas
-
-        // Desenha os grids
+        // Desenha os grids primeiro (não ficam esperando o carrossel)
         renderizarProdutos(todosProdutos, gridProdutos, false);
+        renderizarProdutos(todosProdutos, gridTodosOfertas, false);
         const emPromocao = todosProdutos.filter(produto => produto.emPromocao && produto.valoremPromocao < produto.valorProduto);
         renderizarProdutos(emPromocao, gridPromocoes, true);
+
+        // Carrossel: se der qualquer problema aqui, o resto da página continua funcionando
+        try {
+            const maioresDescontos = calcularMaioresDescontos(todosProdutos, 3); // Pega o Top 3
+            console.info('[Carrossel] produtos ativos:', todosProdutos.length, '| promoções encontradas:', maioresDescontos.length);
+            await renderizarCarrosselDinâmico(maioresDescontos); // Só troca o banner quando as fotos estiverem prontas
+        } catch (erroCarrossel) {
+            console.error('[Carrossel] erro ao montar:', erroCarrossel);
+        }
 
     } catch (erro) {
         console.error('Erro ao carregar produtos:', erro);

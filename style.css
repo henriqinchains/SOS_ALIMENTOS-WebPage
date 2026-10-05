@@ -132,17 +132,21 @@ header {
 .logo-e-sociais {
     display: flex;
     align-items: center;
-    gap: 25px; /* Espaço entre o nome SOS ALIMENTOS e os ícones */
+    gap: 25px;
+    /* Espaço entre o nome SOS ALIMENTOS e os ícones */
 }
 
 .redes-sociais {
     display: flex;
-    gap: 15px; /* Espaço entre o WhatsApp e o Instagram */
+    gap: 15px;
+    /* Espaço entre o WhatsApp e o Instagram */
 }
 
 .redes-sociais a {
-    color: #333; /* Cor neutra para combinar com a logo */
-    font-size: 26px; /* Tamanho dos ícones */
+    color: #333;
+    /* Cor neutra para combinar com a logo */
+    font-size: 26px;
+    /* Tamanho dos ícones */
     text-decoration: none;
     transition: transform 0.2s ease, color 0.3s ease;
     display: flex;
@@ -150,12 +154,18 @@ header {
 }
 
 .redes-sociais a:hover {
-    transform: scale(1.15); /* Efeito de crescer ao passar o mouse */
+    transform: scale(1.15);
+    /* Efeito de crescer ao passar o mouse */
 }
 
 /* Cores oficiais ao passar o mouse */
-.redes-sociais .icon-zap:hover { color: #25D366; }
-.redes-sociais .icon-insta:hover { color: #E1306C; }
+.redes-sociais .icon-zap:hover {
+    color: #25D366;
+}
+
+.redes-sociais .icon-insta:hover {
+    color: #E1306C;
+}
 
 @media (max-width: 480px) {
     .nav-bar-principal {
@@ -502,13 +512,102 @@ header {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: var(--secundaria);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff5f2e 0%, var(--primaria) 55%, #b71c1c 100%);
     color: var(--branco);
+    box-shadow: 0 6px 14px rgba(229, 57, 53, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    overflow: hidden;
+    line-height: 1;
+}
+
+/* Brilho que passa pelo selo de tempos em tempos */
+.selo-promocao::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: skewX(-20deg);
+    animation: brilho-selo 3.5s ease-in-out infinite;
+}
+
+@keyframes brilho-selo {
+
+    0%,
+    60% {
+        left: -80%;
+    }
+
+    100% {
+        left: 140%;
+    }
+}
+
+.selo-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--branco);
+    color: var(--primaria);
     font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
+    flex-shrink: 0;
+}
+
+.selo-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.selo-label {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    opacity: 0.92;
+}
+
+.selo-percentual {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+/* Card em promoção ganha um leve destaque */
+.produto-card-promo {
+    border-color: rgba(229, 57, 53, 0.25);
+    box-shadow: 0 4px 18px rgba(229, 57, 53, 0.1);
+}
+
+/* Título da seção "Todos os Produtos" */
+.titulo-secao-todos {
+    margin-top: 50px;
+}
+
+.titulo-secao-todos h3 {
+    display: inline-block;
+}
+
+.titulo-secao-linha {
+    display: block;
+    width: 60px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--primaria), var(--secundaria));
 }
 
 /* ==========================================
@@ -553,20 +652,65 @@ header {
     font-weight: bold;
 }
 
-/* Crachá de Desconto Flutuante */
+/* Crachá de Desconto Flutuante (selo estrela) */
 .badge-desconto {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #2ed573;
-    color: #fff;
-    font-size: 1.5rem;
+    top: -12px;
+    right: -6px;
+    z-index: 3;
+    width: 112px;
+    height: 112px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    color: #8e1a17;
+    text-align: center;
+    line-height: 1;
+    background: radial-gradient(circle at 30% 25%, #fff59d 0%, #ffd54f 35%, #ffa000 100%);
+    clip-path: polygon(50.0% 0.0%, 57.5% 7.7%, 67.1% 3.0%, 71.5% 12.8%, 82.1% 11.7%, 82.9% 22.4%, 93.3% 25.0%, 90.4% 35.3%, 99.2% 41.3%, 93.0% 50.0%, 99.2% 58.7%, 90.4% 64.7%, 93.3% 75.0%, 82.9% 77.6%, 82.1% 88.3%, 71.5% 87.2%, 67.1% 97.0%, 57.5% 92.3%, 50.0% 100.0%, 42.5% 92.3%, 32.9% 97.0%, 28.5% 87.2%, 17.9% 88.3%, 17.1% 77.6%, 6.7% 75.0%, 9.6% 64.7%, 0.8% 58.7%, 7.0% 50.0%, 0.8% 41.3%, 9.6% 35.3%, 6.7% 25.0%, 17.1% 22.4%, 17.9% 11.7%, 28.5% 12.8%, 32.9% 3.0%, 42.5% 7.7%);
+    transform: rotate(12deg);
+    animation: pulsar-badge 2.4s ease-in-out infinite;
+}
+
+.badge-pre {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.85;
+}
+
+.badge-valor {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 1.9rem;
     font-weight: 800;
-    padding: 15px;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transform: rotate(15deg);
-    /* Dá um ar de 'etiqueta colada' */
+    letter-spacing: -0.03em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.badge-off {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #8e1a17;
+    color: #fff59d;
+}
+
+@keyframes pulsar-badge {
+
+    0%,
+    100% {
+        transform: rotate(12deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(8deg) scale(1.05);
+    }
 }
 
 /* Área do Texto (Direita) */
@@ -677,8 +821,23 @@ header {
     }
 
     .badge-desconto {
-        font-size: 1rem;
-        padding: 10px;
+        width: 84px;
+        height: 84px;
+        top: -10px;
+        right: -4px;
+    }
+
+    .badge-pre {
+        font-size: 0.4rem;
+    }
+
+    .badge-valor {
+        font-size: 1.35rem;
+    }
+
+    .badge-off {
+        font-size: 0.55rem;
+        padding: 1px 6px;
     }
 }
 
@@ -725,8 +884,22 @@ header {
         top: 6px;
         left: 6px;
         right: auto;
+        gap: 5px;
+        padding: 4px 8px 4px 5px;
+    }
+
+    .selo-icone {
+        width: 18px;
+        height: 18px;
         font-size: 0.6rem;
-        padding: 2px 6px;
+    }
+
+    .selo-label {
+        font-size: 0.45rem;
+    }
+
+    .selo-percentual {
+        font-size: 0.8rem;
     }
 }
 
@@ -843,6 +1016,76 @@ header {
     color: var(--secundaria);
 }
 
+.rodape-localizacao {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 25px 0;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 2fr;
+    gap: 30px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rodape-endereco h3 {
+    color: var(--branco);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.rodape-endereco p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #dfe6e9;
+    margin-bottom: 16px;
+}
+
+.rodape-endereco p i {
+    color: var(--secundaria);
+    margin-right: 6px;
+}
+
+.btn-como-chegar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--primaria);
+    color: var(--branco);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-como-chegar:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+}
+
+.rodape-mapa {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.rodape-mapa iframe {
+    display: block;
+    width: 100%;
+}
+
+@media (max-width: 700px) {
+    .rodape-localizacao {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .rodape-mapa iframe {
+        height: 220px;
+    }
+}
+
 .rodape-copy {
     text-align: center;
     font-size: 0.78rem;
@@ -872,14 +1115,15 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1e272e 0%, #2f3640 100%); /* Fundo escuro elegante */
+    background: linear-gradient(135deg, #1e272e 0%, #2f3640 100%);
+    /* Fundo escuro elegante */
 }
 
 .login-box {
     background: #ffffff;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
     width: 100%;
     max-width: 400px;
     text-align: center;

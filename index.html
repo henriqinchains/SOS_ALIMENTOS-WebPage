@@ -7,11 +7,13 @@
     <title>SOS ALIMENTOS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- Link adicionado para puxar os ícones do WhatsApp e Instagram -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -19,18 +21,20 @@
     <header>
         <!-- Navegação Principal -->
         <div class="nav-bar-secundaria">
-            
+
             <!-- Grupo: Logo + Ícones Sociais -->
             <div class="logo-e-sociais">
                 <div class="logo">
                     <h2>SOS ALIMENTOS</h2>
                 </div>
-                
+
                 <div class="redes-sociais">
-                    <a href="https://wa.me/5513988824697?text=Ol%C3%A1%21%20Eu%20gostaria%20de%20fazer%20um%20pedido." target="_blank" class="icon-zap" title="Nosso WhatsApp">
+                    <a href="https://wa.me/5513988824697?text=Ol%C3%A1%21%20Eu%20gostaria%20de%20fazer%20um%20pedido."
+                        target="_blank" class="icon-zap" title="Nosso WhatsApp">
                         <i class="fab fa-whatsapp"></i>
                     </a>
-                    <a href="https://instagram.com/sosalimentosoficial" target="_blank" class="icon-insta" title="Nosso Instagram">
+                    <a href="https://instagram.com/sosalimentosoficial" target="_blank" class="icon-insta"
+                        title="Nosso Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
                 </div>
@@ -46,13 +50,13 @@
 
     <!-- Container Principal do SPA -->
     <main id="app">
-        
+
         <!-- PÁGINA 1: OFERTAS (CARROSSEL) -->
         <section id="ofertas" class="page active">
             <div class="titulo-pagina">
                 <h2>Ofertas em Destaque</h2>
             </div>
-            
+
             <!-- Carrossel Padrão -->
             <div id="banner-carrossel" class="carrossel hidden">
                 <div class="slides-container">
@@ -69,7 +73,8 @@
 
             <!-- Caixa de Pesquisa -->
             <div class="pesquisa-container">
-                <input type="text" id="search-input-ofertas" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <input type="text" id="search-input-ofertas"
+                    placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
                 <button class="btn-pesquisar">Buscar</button>
             </div>
 
@@ -83,6 +88,19 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
             </div>
+
+            <!-- Todos os Produtos (abaixo das promoções) -->
+            <div class="titulo-secao titulo-secao-todos">
+                <h3>Todos os Produtos</h3>
+                <span class="titulo-secao-linha"></span>
+            </div>
+
+            <div class="grid-produtos" id="grid-todos-ofertas">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
         </section>
 
         <!-- PÁGINA 2: PRODUTOS (PESQUISA + GRID) -->
@@ -90,10 +108,11 @@
             <div class="titulo-pagina">
                 <h2>Nossos Produtos</h2>
             </div>
-            
+
             <!-- Caixa de Pesquisa -->
             <div class="pesquisa-container">
-                <input type="text" id="search-input-produtos" placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <input type="text" id="search-input-produtos"
+                    placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
                 <button class="btn-pesquisar">Buscar</button>
             </div>
 
@@ -110,6 +129,23 @@
 
     <!-- Rodapé -->
     <footer class="rodape">
+        <div class="rodape-localizacao" id="localizacao">
+            <div class="rodape-endereco">
+                <h3>Onde estamos</h3>
+                <p><i class="fas fa-location-dot"></i> Avenida Pedro Lessa, 1054<br>Santos - SP</p>
+                <a class="btn-como-chegar"
+                    href="https://www.google.com/maps/search/?api=1&query=Avenida+Pedro+Lessa+1054+Santos+SP"
+                    target="_blank" rel="noopener">
+                    <i class="fas fa-route"></i> Como chegar
+                </a>
+            </div>
+            <div class="rodape-mapa">
+                <iframe title="Localização da SOS Alimentos no Google Maps"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3645.5864557953714!2d-46.3053846253093!3d-23.97505947851772!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce03b1cf01934b%3A0x7e34b5da15627d01!2sS.O.S.%20Alimentos!5e0!3m2!1sen!2sus!4v1791168836962!5m2!1sen!2sus"
+                    width="100%" height="260" style="border:0;" allowfullscreen loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
         <div class="rodape-conteudo">
             <div class="rodape-marca">
                 <h3>SOS ALIMENTOS</h3>

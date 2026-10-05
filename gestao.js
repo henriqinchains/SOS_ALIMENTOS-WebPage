@@ -11,7 +11,7 @@ async function fazerLogin(event) {
     const usuario = document.getElementById('loginUsuario').value;
     const senha = document.getElementById('loginSenha').value;
     const erroDiv = document.getElementById('loginErro');
-    
+
     erroDiv.classList.add('hidden'); // Esconde erro antigo
 
     try {
@@ -26,7 +26,7 @@ async function fazerLogin(event) {
             // A MÁGICA: Esconde o login, mostra o painel e carrega os produtos!
             document.getElementById('tela-login').classList.add('hidden');
             document.getElementById('tela-painel').classList.remove('hidden');
-            carregarProdutos(); 
+            carregarProdutos();
         } else {
             erroDiv.classList.remove('hidden'); // Mostra a faixa vermelha de erro
         }
@@ -43,7 +43,7 @@ async function carregarProdutos() {
     try {
         const resposta = await fetch(`${render}/api/produtos`);
         listaDeProdutos = await resposta.json();
-        renderizarTabela(); 
+        renderizarTabela();
     } catch (erro) {
         console.error('Erro ao carregar produtos:', erro);
         alert('Erro ao carregar a lista de produtos do servidor.');
@@ -56,11 +56,11 @@ function renderizarTabela() {
     corpo.innerHTML = '';
 
     listaDeProdutos.forEach(produto => {
-        
+
         // Define o quadradinho da foto com Lazy Loading para otimização
         const urlFoto = produto.img ? produto.img : '';
-        const imgHtml = urlFoto 
-            ? `<img src="${urlFoto}" loading="lazy" alt="Foto">` 
+        const imgHtml = urlFoto
+            ? `<img src="${urlFoto}" loading="lazy" alt="Foto">`
             : `<span>📷</span>`;
 
         const linha = `
@@ -98,7 +98,7 @@ async function salvarProduto(event) {
     event.preventDefault();
 
     const id = document.getElementById('produtoId').value;
-    
+
     const dadosFormulario = {
         nomeProduto: document.getElementById('nomeProduto').value,
         unidade: document.getElementById('unidade').value,
@@ -130,7 +130,7 @@ async function salvarProduto(event) {
         if (resposta.ok) {
             alert('Produto salvo com sucesso!');
             fecharFormulario();
-            carregarProdutos(); 
+            carregarProdutos();
         } else {
             const erro = await resposta.json();
             alert(`Erro: ${erro.erro || erro.error}`);
@@ -153,10 +153,10 @@ function prepararEdicao(id) {
     document.getElementById('ativoManual').value = produto.ativo ? 'true' : 'false';
     document.getElementById('emPromocaoManual').value = produto.emPromocao ? 'true' : 'false';
     document.getElementById('valoremPromocao').value = produto.valoremPromocao;
-    
+
     document.getElementById('tituloFormulario').innerText = 'Editando Produto da Vitrine';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
     // NOTA: Limpamos o código da foto que dava erro aqui!
 }
 
@@ -165,10 +165,10 @@ async function deletarProduto(id) {
     if (!confirm('Tem certeza que deseja apagar este produto?')) return;
 
     try {
-        const resposta = await fetch(`${render}/api/produtos/${id}`, 
-            { 
-                method: 'DELETE', 
-                credentials: 'include' 
+        const resposta = await fetch(`${render}/api/produtos/${id}`,
+            {
+                method: 'DELETE',
+                credentials: 'include'
             });
         if (resposta.ok) carregarProdutos();
     } catch (erro) {
@@ -200,10 +200,10 @@ async function preVisualizarCSV() {
 
         if (resposta.ok) {
             const dadosBrutos = await resposta.json();
-            
+
             dadosPlanilhaMemoria = dadosBrutos.map(p => {
                 p.emPromocao = false;
-                p.valoremPromocao = p.valorProduto; 
+                p.valoremPromocao = p.valorProduto;
                 return p;
             });
 
@@ -220,7 +220,7 @@ async function preVisualizarCSV() {
 function renderizarTabelaPreview() {
     const corpoPreview = document.getElementById('corpoPreview');
     corpoPreview.innerHTML = '';
-    
+
     dadosPlanilhaMemoria.forEach((p, index) => {
         corpoPreview.insertAdjacentHTML('beforeend', `
             <tr>
@@ -263,7 +263,7 @@ function renderizarTabelaPreview() {
 function atualizarItemPreview(index, campo, valor) {
     if (campo === 'valorProduto') {
         dadosPlanilhaMemoria[index][campo] = parseFloat(valor) || 0;
-        dadosPlanilhaMemoria[index]['valoremPromocao'] = parseFloat(valor) || 0; 
+        dadosPlanilhaMemoria[index]['valoremPromocao'] = parseFloat(valor) || 0;
     } else if (campo === 'ativo' || campo === 'emPromocao') {
         dadosPlanilhaMemoria[index][campo] = (valor === 'true');
     } else {
@@ -292,11 +292,11 @@ async function confirmarImportacao() {
         if (resposta.ok) {
             const resultado = await resposta.json();
             alert(`Sincronização Concluída! ${resultado.inseridos} novos produtos e ${resultado.atualizados} atualizados.`);
-            
+
             document.getElementById('areaPreview').classList.add('hidden');
             document.getElementById('arquivoCsv').value = '';
             dadosPlanilhaMemoria = [];
-            
+
             mudarAba('vitrine');
             carregarProdutos();
         } else {
@@ -317,7 +317,7 @@ async function confirmarImportacao() {
 function mudarAba(abaId) {
     document.querySelectorAll('.aba-conteudo').forEach(aba => aba.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
-    
+
     document.getElementById(`aba-${abaId}`).classList.remove('hidden');
     event.currentTarget.classList.add('ativo');
 }
@@ -347,7 +347,7 @@ function abrirModalImagem(idProduto) {
 
     document.getElementById('modalProdutoId').value = produto._id;
     document.getElementById('inputUrlImagem').value = produto.img || '';
-    
+
     atualizarPreviewModal();
     document.getElementById('modalImagem').classList.remove('hidden');
 }
@@ -355,17 +355,17 @@ function abrirModalImagem(idProduto) {
 // Fechar e limpar todo o modal
 function fecharModalImagem() {
     document.getElementById('modalImagem').classList.add('hidden');
-    
+
     // Restaura o visual padrão da coluna direita
     document.getElementById('areaCorte').style.display = 'none';
     document.getElementById('textoAreaCorte').style.display = 'flex';
     document.getElementById('inputUploadImagem').value = '';
-    
+
     if (cropper) {
         cropper.destroy();
         cropper = null;
     }
-    
+
     // Restaura os botões originais caso tenham mudado
     document.getElementById('botoesModalImagem').innerHTML = `
         <button class="btn btn-danger" type="button" onclick="removerImagem()">🗑️ Remover Imagem</button>
@@ -379,7 +379,7 @@ function atualizarPreviewModal() {
     const url = document.getElementById('inputUrlImagem').value;
     const imgEl = document.getElementById('modalPreviewImg');
     const textoEl = document.getElementById('modalPreviewTexto');
-    
+
     if (url) {
         imgEl.src = url;
         imgEl.style.display = 'block';
@@ -410,7 +410,7 @@ function iniciarCorte(event) {
     if (cropper) cropper.destroy();
 
     cropper = new Cropper(imgElement, {
-        aspectRatio: 1, 
+        aspectRatio: 1,
         viewMode: 1,
         autoCropArea: 0.9,
     });
@@ -420,7 +420,7 @@ function iniciarCorte(event) {
 async function confirmarImagem() {
     const id = document.getElementById('modalProdutoId').value;
     const novaUrl = document.getElementById('inputUrlImagem').value;
-    
+
     const produtoIndex = listaDeProdutos.findIndex(p => p._id === id);
     if (produtoIndex === -1) return;
     const produtoOriginal = listaDeProdutos[produtoIndex];
@@ -431,20 +431,20 @@ async function confirmarImagem() {
     if (cropper) {
         cropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob(async (blobImagemCortada) => {
             const formData = new FormData();
-            formData.append('imagemFile', blobImagemCortada, 'produto.jpg'); 
+            formData.append('imagemFile', blobImagemCortada, 'produto.jpg');
 
             try {
-                document.getElementById('botoesModalImagem').innerHTML = 'Enviando foto, aguarde... ⏳'; 
-                
+                document.getElementById('botoesModalImagem').innerHTML = 'Enviando foto, aguarde... ⏳';
+
                 const resposta = await fetch(`${render}/api/produtos/${id}/imagem`, {
                     method: 'POST',
                     credentials: 'include',
-                    body: formData 
+                    body: formData
                 });
-                
+
                 if (resposta.ok) {
                     const produtoAtualizado = await resposta.json();
-                    listaDeProdutos[produtoIndex].img = produtoAtualizado.img; 
+                    listaDeProdutos[produtoIndex].img = produtoAtualizado.img;
                     fecharModalImagem();
                     renderizarTabela();
                 } else {
@@ -456,7 +456,7 @@ async function confirmarImagem() {
                 fecharModalImagem();
             }
         }, 'image/jpeg', 0.85); // Corta, converte pra jpg e comprime 15%
-        return; 
+        return;
     }
 
     // ===============================================
@@ -464,7 +464,7 @@ async function confirmarImagem() {
     // ===============================================
     const { _id, __v, ...dadosParaSalvar } = produtoOriginal;
     dadosParaSalvar.img = novaUrl;
-    
+
     try {
         const resposta = await fetch(`${render}/api/produtos/${id}`, {
             method: 'PUT',
@@ -472,7 +472,7 @@ async function confirmarImagem() {
             credentials: 'include',
             body: JSON.stringify(dadosParaSalvar)
         });
-        
+
         if (resposta.ok) {
             listaDeProdutos[produtoIndex].img = novaUrl;
             fecharModalImagem();
@@ -487,5 +487,5 @@ async function confirmarImagem() {
 
 function removerImagem() {
     document.getElementById('inputUrlImagem').value = '';
-    confirmarImagem(); 
+    confirmarImagem();
 }
