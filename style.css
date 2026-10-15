@@ -1413,10 +1413,12 @@ td {
     padding: 15px;
     border-bottom: 1px solid var(--borda);
     color: var(--texto-escuro);
+    min-height: 76.5px;
 }
 
 td {
     overflow-wrap: break-word;
+   min-height: 76.5px;
     /* nomes de produto longos podem quebrar linha */
 }
 
