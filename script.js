@@ -23,6 +23,9 @@ function router() {
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.classList.toggle('ativo', link.getAttribute('href') === hash);
     });
+
+    // As setas do scroll só sabem se são necessárias quando a página está visível
+    atualizarSetas();
 }
 
 // Escuta a mudança no link (quando o usuário clica no menu)
@@ -105,6 +108,20 @@ async function fetchComTimeout(url, ms = 10000) {
 }
 
 let todosProdutos = [];
+let todosDepartamentos = []; // já vem do servidor na ordem definida pelo admin
+
+// minúsculas e sem acento: "feijao" encontra "Feijão"
+function normalizar(texto) {
+    return String(texto ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function compararNomes(a, b) {
+    return String(a).localeCompare(String(b), 'pt-BR', { sensitivity: 'base' });
+}
+
+function ordenarPorNome(lista) {
+    return [...lista].sort((a, b) => compararNomes(a.nomeProduto, b.nomeProduto));
+}
 
 // Formata número para moeda brasileira (R$)
 function formatarPreco(valor) {
@@ -263,6 +280,167 @@ function renderizarProdutos(lista, container, apenasPromocao) {
     });
 }
 
+// ==========================
+// 3.1 DEPARTAMENTOS E SCROLL HORIZONTAL
+// ==========================
+
+// Separa os produtos por departamento, respeitando a ordem recebida em "departamentos".
+// Itens sem departamento (ou de um departamento que não existe mais) vão para o fim.
+function agruparPorDepartamento(produtos, departamentos) {
+    const grupos = departamentos.map(depto => ({ id: depto._id, nome: depto.nome, itens: [] }));
+    const porId = new Map(grupos.map(grupo => [grupo.id, grupo]));
+    const outros = {
+        id: '',
+        nome: departamentos.length ? 'Outros produtos' : 'Todos os produtos',
+        itens: []
+    };
+
+    produtos.forEach(produto => (porId.get(produto.departamentoId) || outros).itens.push(produto));
+    if (outros.itens.length) grupos.push(outros);
+
+    // Só mostra departamentos que têm item ativo, e cada um em ordem alfabética
+    return grupos
+        .filter(grupo => grupo.itens.length)
+        .map(grupo => ({ ...grupo, itens: ordenarPorNome(grupo.itens) }));
+}
+
+// Cria um trilho com scroll horizontal (com setas para quem usa mouse)
+function criarScrollHorizontal(produtos) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'scroll-wrapper';
+    wrapper.innerHTML = `
+        <button type="button" class="scroll-seta esq" aria-label="Rolar para a esquerda">&#10094;</button>
+        <div class="scroll-horizontal"></div>
+        <button type="button" class="scroll-seta dir" aria-label="Rolar para a direita">&#10095;</button>
+    `;
+    const trilho = wrapper.querySelector('.scroll-horizontal');
+    produtos.forEach(produto => trilho.appendChild(criarCardProduto(produto)));
+    return wrapper;
+}
+
+function criarSecaoDepartamento(grupo, comoScroll) {
+    const secao = document.createElement('section');
+    secao.className = 'departamento-secao';
+
+    const titulo = document.createElement('div');
+    titulo.className = 'titulo-departamento';
+    const h3 = document.createElement('h3');
+    h3.textContent = grupo.nome; // textContent: nome com < > não quebra a página
+    titulo.appendChild(h3);
+    secao.appendChild(titulo);
+
+    if (comoScroll) {
+        secao.appendChild(criarScrollHorizontal(grupo.itens));
+    } else {
+        const grid = document.createElement('div');
+        grid.className = 'grid-produtos';
+        grupo.itens.forEach(produto => grid.appendChild(criarCardProduto(produto)));
+        secao.appendChild(grid);
+    }
+    return secao;
+}
+
+// Mostra/esconde as setas conforme o trilho realmente rola
+function atualizarSetas() {
+    document.querySelectorAll('.scroll-wrapper').forEach(wrapper => {
+        const trilho = wrapper.querySelector('.scroll-horizontal');
+        if (!trilho) return;
+        wrapper.classList.toggle('sem-overflow', trilho.scrollWidth <= trilho.clientWidth + 2);
+    });
+}
+
+document.addEventListener('click', (evento) => {
+    const seta = evento.target.closest('.scroll-seta');
+    if (!seta) return;
+    const trilho = seta.parentElement.querySelector('.scroll-horizontal');
+    const direcao = seta.classList.contains('esq') ? -1 : 1;
+    trilho.scrollBy({ left: direcao * trilho.clientWidth * 0.8, behavior: 'smooth' });
+});
+
+window.addEventListener('resize', atualizarSetas);
+
+// PÁGINA INICIAL: um scroll horizontal por departamento, na ordem escolhida na gestão
+function renderizarDepartamentosHome() {
+    const container = document.getElementById('grid-todos-ofertas');
+    if (!container) return;
+
+    container.className = 'departamentos-home';
+    container.innerHTML = '';
+
+    const grupos = agruparPorDepartamento(todosProdutos, todosDepartamentos);
+    if (grupos.length === 0) {
+        container.innerHTML = '<p class="msg-estado">Nenhum produto encontrado.</p>';
+        return;
+    }
+    grupos.forEach(grupo => container.appendChild(criarSecaoDepartamento(grupo, true)));
+    atualizarSetas();
+}
+
+// PÁGINA PRODUTOS: departamentos em ordem alfabética (itens também), com filtro e busca
+function popularFiltroDepartamento() {
+    const select = document.getElementById('filtro-departamento');
+    if (!select) return;
+
+    const valorAtual = select.value;
+    const grupos = agruparPorDepartamento(todosProdutos, todosDepartamentos)
+        .sort((a, b) => compararNomes(a.nome, b.nome));
+
+    select.innerHTML = '<option value="">Todos os departamentos</option>';
+    grupos.forEach(grupo => {
+        const opcao = document.createElement('option');
+        opcao.value = grupo.id || '__outros';
+        opcao.textContent = grupo.nome;
+        select.appendChild(opcao);
+    });
+    select.value = [...select.options].some(o => o.value === valorAtual) ? valorAtual : '';
+}
+
+function renderizarPaginaProdutos() {
+    const container = document.getElementById('grid-produtos');
+    const input = document.getElementById('search-input-produtos');
+    const select = document.getElementById('filtro-departamento');
+    if (!container) return;
+
+    const termo = normalizar(input ? input.value : '');
+    const filtro = select ? select.value : '';
+
+    const filtrados = todosProdutos.filter(produto => !termo || normalizar(produto.nomeProduto).includes(termo));
+
+    // Departamentos A-Z; "Outros produtos" / "Todos os produtos" sempre por último
+    const todosGrupos = agruparPorDepartamento(filtrados, todosDepartamentos);
+    const outros = todosGrupos.find(grupo => grupo.id === '');
+    let grupos = todosGrupos
+        .filter(grupo => grupo.id !== '')
+        .sort((a, b) => compararNomes(a.nome, b.nome));
+    if (outros) grupos.push(outros);
+
+    if (filtro) grupos = grupos.filter(grupo => (grupo.id || '__outros') === filtro);
+
+    container.className = 'produtos-agrupados';
+    container.innerHTML = '';
+
+    if (grupos.length === 0) {
+        container.innerHTML = '<p class="msg-estado">Nenhum produto encontrado.</p>';
+        return;
+    }
+    grupos.forEach(grupo => container.appendChild(criarSecaoDepartamento(grupo, false)));
+}
+
+function configurarPaginaProdutos() {
+    const input = document.getElementById('search-input-produtos');
+    const select = document.getElementById('filtro-departamento');
+    if (!input || !select) return;
+
+    input.addEventListener('input', renderizarPaginaProdutos);
+    input.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Enter') renderizarPaginaProdutos();
+    });
+    select.addEventListener('change', renderizarPaginaProdutos);
+
+    const botao = input.closest('.pesquisa-container').querySelector('.btn-pesquisar');
+    if (botao) botao.addEventListener('click', renderizarPaginaProdutos);
+}
+
 // O Render gratuito pode levar de 30 a 90 segundos para acordar. Esperamos até ~2 minutos.
 async function esperarServidorAcordar(tentativas = 30, intervaloMs = 3000) {
     for (let i = 0; i < tentativas; i++) {
@@ -318,6 +496,10 @@ async function carregarProdutos() {
     const gridPromocoes = document.getElementById('grid-promocoes');
     const gridTodosOfertas = document.getElementById('grid-todos-ofertas');
 
+    // Volta ao layout de "carregando" (as seções por departamento trocam essas classes)
+    if (gridProdutos) gridProdutos.className = 'grid-produtos';
+    if (gridTodosOfertas) gridTodosOfertas.className = 'grid-produtos';
+
     mostrarEsqueletoCarregando(gridProdutos, 4);
     mostrarEsqueletoCarregando(gridPromocoes, 3);
     mostrarEsqueletoCarregando(gridTodosOfertas, 4);
@@ -348,11 +530,22 @@ async function carregarProdutos() {
 
         todosProdutos = dadosBrutos.filter(produto => produto.ativo === true);
 
+        // Departamentos (já na ordem da gestão). Se falhar, o site funciona sem eles.
+        try {
+            const respostaDeptos = await fetchComTimeout(`${API_URL}/api/departamentos`, 15000);
+            todosDepartamentos = respostaDeptos.ok ? await respostaDeptos.json() : [];
+        } catch (erroDeptos) {
+            console.error('Erro ao carregar departamentos:', erroDeptos);
+            todosDepartamentos = [];
+        }
+
         // Desenha os grids primeiro (não ficam esperando o carrossel)
-        renderizarProdutos(todosProdutos, gridProdutos, false);
-        renderizarProdutos(todosProdutos, gridTodosOfertas, false);
+        popularFiltroDepartamento();
+        renderizarPaginaProdutos();
+        renderizarDepartamentosHome();
         const emPromocao = todosProdutos.filter(produto => produto.emPromocao && produto.valoremPromocao < produto.valorProduto);
         renderizarProdutos(emPromocao, gridPromocoes, true);
+        atualizarSetas();
 
         // Carrossel: se der qualquer problema aqui, o resto da página continua funcionando
         try {
@@ -390,6 +583,7 @@ function configurarBusca(inputId, containerId, apenasPromocao) {
     const executarBusca = () => {
         const resultado = filtrarProdutos(input.value, apenasPromocao);
         renderizarProdutos(resultado, container, apenasPromocao);
+        atualizarSetas();
     };
 
     input.addEventListener('input', executarBusca);
@@ -405,7 +599,7 @@ function configurarBusca(inputId, containerId, apenasPromocao) {
 // Carrega os produtos assim que a página abre e conecta as duas barras de pesquisa
 window.addEventListener('load', () => {
     carregarProdutos().then(() => {
-        configurarBusca('search-input-produtos', 'grid-produtos', false);
+        configurarPaginaProdutos();
         configurarBusca('search-input-ofertas', 'grid-promocoes', true);
     });
 
