@@ -1669,6 +1669,27 @@ tbody tr:hover {
     padding: 6px 4px 16px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    scrollbar-color: var(--primaria) #ece3e3;
+}
+
+/* Barra de rolagem personalizada (Chrome, Edge, Safari) */
+.scroll-horizontal::-webkit-scrollbar {
+    height: 8px;
+}
+
+.scroll-horizontal::-webkit-scrollbar-track {
+    background: #ece3e3;
+    border-radius: 999px;
+    margin: 0 4px;
+}
+
+.scroll-horizontal::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, var(--primaria), var(--secundaria));
+    border-radius: 999px;
+}
+
+.scroll-horizontal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #c62828, #f57c00);
 }
 
 .scroll-horizontal>.produto-card,
@@ -1807,6 +1828,18 @@ tbody tr:hover {
     color: var(--texto-escuro);
     max-width: 210px;
     cursor: pointer;
+}
+
+/* Barra com filtro: mais larga e com espaço fixo para o seletor (antes o texto ficava cortado) */
+.pesquisa-container.pesquisa-com-filtro {
+    max-width: 860px;
+}
+
+.pesquisa-com-filtro select {
+    flex: 0 0 240px;
+    max-width: none;
+    padding: 0 34px 0 16px;
+    text-overflow: ellipsis;
 }
 
 @media (max-width: 560px) {
