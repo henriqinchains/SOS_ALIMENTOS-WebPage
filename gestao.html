@@ -50,8 +50,9 @@
 
             <!-- NAVEGAÇÃO ENTRE AS OPÇÕES -->
             <nav class="abas">
-                <button class="tab-btn ativo" onclick="mudarAba('vitrine')">🛒 Gerenciar Vitrine</button>
-                <button class="tab-btn" onclick="mudarAba('importacao')">📁 Sincronizar Planilha (CSV)</button>
+                <button class="tab-btn ativo" data-aba="vitrine" onclick="mudarAba('vitrine')">🛒 Gerenciar Vitrine</button>
+                <button class="tab-btn" data-aba="departamentos" onclick="mudarAba('departamentos')">🏷️ Departamentos</button>
+                <button class="tab-btn" data-aba="importacao" onclick="mudarAba('importacao')">📁 Sincronizar Planilha (CSV)</button>
             </nav>
         </header>
 
@@ -106,6 +107,14 @@
                                     <option value="false">Inativo (Falta de Estoque)</option>
                                 </select>
                             </div>
+
+                            <div class="input-group">
+                                <label>Departamento</label>
+                                <select id="departamentoProduto"
+                                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <option value="">Sem departamento</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-actions" style="margin-top: 1rem;">
                             <button type="button" class="btn btn-outline" onclick="fecharFormulario()">Cancelar</button>
@@ -114,17 +123,44 @@
                     </form>
                 </div>
 
+                <!-- FILTROS -->
+                <div class="barra-filtros">
+                    <input type="search" id="filtroNome" class="campo campo-busca" placeholder="🔍 Buscar por nome..."
+                        oninput="aplicarFiltros()">
+                    <select id="filtroUnidade" class="campo" onchange="aplicarFiltros()">
+                        <option value="">Todas as unidades</option>
+                    </select>
+                    <select id="filtroDepartamento" class="campo" onchange="aplicarFiltros()">
+                        <option value="">Todos os departamentos</option>
+                    </select>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="limparFiltros()">Limpar filtros</button>
+                </div>
+                <p id="contadorProdutos" class="contador-produtos"></p>
+
+                <!-- AÇÃO EM LOTE (aparece quando há itens marcados) -->
+                <div id="barraSelecao" class="barra-selecao hidden">
+                    <strong id="textoSelecionados">0 selecionados</strong>
+                    <select id="destinoLote" class="campo">
+                        <option value="">Sem departamento</option>
+                    </select>
+                    <button type="button" class="btn btn-success btn-sm" onclick="moverSelecionados()">Mover para o departamento</button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="limparSelecao()">Cancelar seleção</button>
+                </div>
+
                 <div class="table-container">
-                    <table>
+                    <table class="tabela-vitrine">
                         <thead>
                             <tr>
-                                <th>Imagem</th>
-                                <th>Nome</th>
-                                <th>Unid.</th>
-                                <th>Valor (R$)</th>
-                                <th>Em promoção</th>
-                                <th>Ativo</th>
-                                <th>Ações</th>
+                                <th class="col-sel"><input type="checkbox" id="marcarTodos" title="Marcar todos os itens filtrados"
+                                        onchange="alternarTodos(this.checked)"></th>
+                                <th class="col-img">Imagem</th>
+                                <th class="col-nome">Nome</th>
+                                <th class="col-unid">Unid.</th>
+                                <th class="col-valor">Valor (R$)</th>
+                                <th class="col-depto">Departamento</th>
+                                <th class="col-promo">Em promoção</th>
+                                <th class="col-ativo">Ativo</th>
+                                <th class="col-acoes">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="corpoTabela">
@@ -132,6 +168,28 @@
                         </tbody>
                     </table>
                 </div>
+            </section>
+
+
+            <!-- ========================================== -->
+            <!-- DEPARTAMENTOS (CRIAR E ORDENAR)            -->
+            <!-- ========================================== -->
+            <section id="aba-departamentos" class="card aba-conteudo hidden">
+                <h2>Departamentos</h2>
+                <p style="color: #666; margin-bottom: 1.5rem;">A ordem desta lista é a ordem em que os departamentos
+                    aparecem na tela inicial do site, logo abaixo das ofertas. Use as setas para reorganizar.
+                    Para colocar itens em um departamento, use a aba <strong>Gerenciar Vitrine</strong>.</p>
+
+                <form class="form-departamento" onsubmit="criarDepartamento(event)">
+                    <input type="text" id="novoDepartamentoNome" class="campo campo-busca" maxlength="60" required
+                        placeholder="Nome do novo departamento (ex: Bebidas, Limpeza...)">
+                    <button type="submit" class="btn">+ Criar departamento</button>
+                </form>
+
+                <ol id="listaDepartamentos" class="lista-departamentos">
+                    <!-- Departamentos entram aqui -->
+                </ol>
+                <p id="avisoSemDepartamento" class="contador-produtos"></p>
             </section>
 
 
