@@ -82,19 +82,18 @@
                 <h3>Produtos em Promoção</h3>
             </div>
 
-            <!-- Grid de Produtos em Promoção -->
-            <div class="grid-produtos" id="grid-promocoes">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
+            <!-- Produtos em Promoção: scroll horizontal -->
+            <div class="scroll-wrapper">
+                <button type="button" class="scroll-seta esq" aria-label="Rolar para a esquerda">&#10094;</button>
+                <div class="scroll-horizontal" id="grid-promocoes">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+                <button type="button" class="scroll-seta dir" aria-label="Rolar para a direita">&#10095;</button>
             </div>
 
-            <!-- Todos os Produtos (abaixo das promoções) -->
-            <div class="titulo-secao titulo-secao-todos">
-                <h3>Todos os Produtos</h3>
-                <span class="titulo-secao-linha"></span>
-            </div>
-
+            <!-- Departamentos (na ordem definida na gestão), abaixo das promoções -->
             <div class="grid-produtos" id="grid-todos-ofertas">
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
@@ -110,9 +109,12 @@
             </div>
 
             <!-- Caixa de Pesquisa -->
-            <div class="pesquisa-container">
+            <div class="pesquisa-container pesquisa-com-filtro">
                 <input type="text" id="search-input-produtos"
                     placeholder="O que você está procurando? (Ex: Arroz, Feijão...)">
+                <select id="filtro-departamento" aria-label="Filtrar por departamento">
+                    <option value="">Todos os departamentos</option>
+                </select>
                 <button class="btn-pesquisar">Buscar</button>
             </div>
 
