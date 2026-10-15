@@ -1653,3 +1653,340 @@ tbody tr:hover {
         font-size: 1.9rem;
     }
 }
+
+/* ==========================================
+   SCROLL HORIZONTAL (ofertas e departamentos)
+   ========================================== */
+.scroll-wrapper {
+    position: relative;
+}
+
+.scroll-horizontal {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: 6px 4px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.scroll-horizontal>.produto-card,
+.scroll-horizontal>.skeleton-card {
+    flex: 0 0 200px;
+    scroll-snap-align: start;
+}
+
+@media (min-width: 700px) {
+
+    .scroll-horizontal>.produto-card,
+    .scroll-horizontal>.skeleton-card {
+        flex-basis: 230px;
+    }
+}
+
+.scroll-horizontal>.skeleton-card {
+    height: 250px;
+}
+
+.scroll-horizontal .msg-estado {
+    flex: 1 0 100%;
+}
+
+/* Dentro do scroll o card é SEMPRE vertical (foto em cima), mesmo no celular */
+.scroll-horizontal .produto-card {
+    display: block;
+    text-align: center;
+    padding: 14px;
+}
+
+.scroll-horizontal .img-placeholder {
+    width: 100%;
+    height: 140px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.scroll-horizontal .produto-card h3 {
+    font-size: 1rem;
+    line-height: 1.3;
+    min-height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.scroll-horizontal .preco {
+    font-size: 1.25rem;
+}
+
+/* Setinhas (só aparecem onde tem mouse; no celular basta deslizar o dedo) */
+.scroll-seta {
+    position: absolute;
+    top: calc(50% - 20px);
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--branco);
+    color: var(--primaria);
+    font-size: 1.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sombra-hover);
+    cursor: pointer;
+}
+
+.scroll-seta.esq {
+    left: -8px;
+}
+
+.scroll-seta.dir {
+    right: -8px;
+}
+
+.scroll-seta:hover {
+    background: var(--primaria);
+    color: var(--branco);
+}
+
+.scroll-wrapper.sem-overflow .scroll-seta {
+    display: none;
+}
+
+@media (hover: none) {
+    .scroll-seta {
+        display: none;
+    }
+}
+
+/* ==========================================
+   SEÇÕES POR DEPARTAMENTO
+   ========================================== */
+.departamentos-home,
+.produtos-agrupados {
+    display: block;
+}
+
+.departamento-secao {
+    margin-top: 30px;
+}
+
+.titulo-departamento {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.titulo-departamento::before {
+    content: '';
+    width: 5px;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--primaria), var(--secundaria));
+}
+
+.titulo-departamento h3 {
+    font-size: 1.25rem;
+    color: var(--texto-escuro);
+}
+
+/* Filtro de departamento dentro da barra de busca */
+.pesquisa-container select {
+    border: none;
+    border-left: 1px solid var(--borda);
+    outline: none;
+    padding: 0 12px;
+    font-size: 0.95rem;
+    background: var(--branco);
+    color: var(--texto-escuro);
+    max-width: 210px;
+    cursor: pointer;
+}
+
+@media (max-width: 560px) {
+    .pesquisa-com-filtro {
+        flex-wrap: wrap;
+    }
+
+    .pesquisa-com-filtro input {
+        flex: 1 1 60%;
+    }
+
+    .pesquisa-com-filtro select {
+        order: 3;
+        flex: 1 0 100%;
+        max-width: none;
+        border-left: none;
+        border-top: 1px solid var(--borda);
+        padding: 12px 16px;
+    }
+}
+
+/* ==========================================
+   GESTÃO: FILTROS, SELEÇÃO EM LOTE E DEPARTAMENTOS
+   ========================================== */
+.barra-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.campo {
+    padding: 10px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--branco);
+    color: var(--texto-escuro);
+    outline: none;
+}
+
+.campo:focus {
+    border-color: var(--primaria);
+}
+
+.campo-busca {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.contador-produtos {
+    color: var(--texto-claro);
+    font-size: 0.85rem;
+    margin: 8px 0 12px;
+}
+
+.barra-selecao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+}
+
+.tabela-vitrine {
+    min-width: 1100px;
+}
+
+.tabela-vitrine th.col-sel {
+    width: 50px;
+}
+
+.tabela-vitrine th.col-img {
+    width: 90px;
+}
+
+.tabela-vitrine th.col-nome {
+    width: auto;
+}
+
+.tabela-vitrine th.col-unid {
+    width: 80px;
+}
+
+.tabela-vitrine th.col-valor {
+    width: 110px;
+}
+
+.tabela-vitrine th.col-depto {
+    width: 170px;
+}
+
+.tabela-vitrine th.col-promo {
+    width: 110px;
+}
+
+.tabela-vitrine th.col-ativo {
+    width: 90px;
+}
+
+.tabela-vitrine th.col-acoes {
+    width: 190px;
+}
+
+.tabela-vitrine td.col-sel,
+.tabela-vitrine th.col-sel {
+    text-align: center;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.tabela-vitrine input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primaria);
+    cursor: pointer;
+}
+
+.tabela-vitrine td.td-vazio {
+    display: table-cell;
+}
+
+.form-departamento {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lista-departamentos {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.depto-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: var(--branco);
+}
+
+.depto-posicao {
+    font-weight: 800;
+    color: var(--primaria);
+    min-width: 34px;
+}
+
+.depto-info {
+    flex: 1 1 160px;
+    display: flex;
+    flex-direction: column;
+}
+
+.depto-info small {
+    color: var(--texto-claro);
+}
+
+.depto-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.depto-acoes .btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.depto-vazio {
+    color: var(--texto-claro);
+    text-align: center;
+    padding: 20px;
+}
